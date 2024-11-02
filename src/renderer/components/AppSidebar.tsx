@@ -6,11 +6,14 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/src/renderer/components/ui/Sidebar';
 import { Link } from 'react-router-dom';
+import { ThemeToggle } from '@/src/renderer/components/container/ThemeToggle';
+import React from 'react';
 
 // Menu items.
 const items = [
@@ -44,6 +47,9 @@ const items = [
 export default function AppSidebar() {
   return (
     <Sidebar>
+      <SidebarHeader>
+        <ThemeToggle />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
