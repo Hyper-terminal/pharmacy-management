@@ -1,25 +1,24 @@
 module.exports = {
-  extends: '',
-  plugins: [],
-  rules: {},
+  parser: '@typescript-eslint/parser', // Use @typescript-eslint/parser for TypeScript
+  extends: [
+    'plugin:react/recommended', // React recommended rules
+    'plugin:@typescript-eslint/recommended', // TypeScript recommended rules
+  ],
+  plugins: ['import', 'react', '@typescript-eslint'], // Include the TypeScript plugin
   parserOptions: {
     ecmaVersion: 2022,
     sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true, // Enable JSX parsing
+    },
+    requireConfigFile: false,
   },
   settings: {
-    'import/resolver': {
-      // See https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-575727774 for line below
-      node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        moduleDirectory: ['node_modules', 'src/'],
-      },
-      webpack: {
-        config: require.resolve('./.erb/configs/webpack.config.eslint.ts'),
-      },
-      typescript: {},
+    react: {
+      version: 'detect', // Automatically detect the react version
     },
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx'],
-    },
+  },
+  rules: {
+    'react/react-in-jsx-scope': 'off', // Disable the rule
   },
 };
