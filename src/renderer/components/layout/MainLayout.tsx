@@ -1,23 +1,22 @@
+import AppSidebar from '@/src/renderer/components/AppSidebar';
+import { ThemeProvider } from '@/src/renderer/components/ThemeProvider';
 import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/src/renderer/components/ui/Sidebar';
-import AppSidebar from '@/src/renderer/components/AppSidebar';
-import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { ThemeProvider } from '@/src/renderer/components/ThemeProvider';
 
 export default function MainLayout() {
   return (
     <ThemeProvider>
-
       <SidebarProvider>
         <AppSidebar />
-        <>
-          <SidebarTrigger className="mt-3"/>
+        <main className='p-4 overflow-hidden'>
+          <SidebarTrigger />
 
-          <Outlet />
-        </>
+            <Outlet />
+
+        </main>
       </SidebarProvider>
     </ThemeProvider>
   );
