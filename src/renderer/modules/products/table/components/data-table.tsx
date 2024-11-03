@@ -69,7 +69,7 @@ export default function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-[100%] overflow-x-auto">
       <DataTableToolbar table={table} />
       <div className="border rounded-md">
         <Table>

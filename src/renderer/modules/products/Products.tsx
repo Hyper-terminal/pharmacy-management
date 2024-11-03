@@ -1,12 +1,12 @@
 import { Button } from '@/src/renderer/components/ui/Button';
-import { PlusCircle } from 'lucide-react';
-import DataTable from '@/src/renderer/modules/products/table/components/data-table';
 import { columns } from '@/src/renderer/modules/products/table/components/columns';
-import { tasksJson } from '@/src/renderer/modules/products/table/data/tasks';
+import DataTable from '@/src/renderer/modules/products/table/components/data-table';
+import { INVOICE } from '@/src/renderer/modules/products/table/data/tasks';
+import { PlusCircle } from 'lucide-react';
 
 export default function Products() {
   return (
-    <div className="flex-col flex-1 h-full p-8 space-y-8 md:flex">
+    <div className="flex-col max-w-full flex-1 h-full p-8 space-y-8 md:flex overflow-hidden overflow-y-auto">
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
@@ -23,7 +23,9 @@ export default function Products() {
         </div>
       </div>
 
-      <DataTable data={tasksJson} columns={columns} onRowClick={() => {}} />
+      <div className="max-w-full overflow-x-auto">
+        <DataTable data={INVOICE} columns={columns} onRowClick={() => {}} />
+      </div>
     </div>
   );
 }

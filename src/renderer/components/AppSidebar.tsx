@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from 'lucide-react';
+import { Calendar, Home, PlusCircle, Search, Settings } from 'lucide-react';
 
 import {
   Sidebar,
@@ -19,13 +19,13 @@ import React from 'react';
 const items = [
   {
     title: 'Products',
-    url: '#',
+    url: '/',
     icon: Home,
   },
   {
-    title: 'Inbox',
-    url: '#',
-    icon: Inbox,
+    title: 'Add Product',
+    url: '/add-product',
+    icon: PlusCircle,
   },
   {
     title: 'Calendar',
@@ -46,8 +46,8 @@ const items = [
 
 export default function AppSidebar() {
   return (
-    <Sidebar>
-      <SidebarHeader>
+    <Sidebar className="py-3">
+      <SidebarHeader >
         <ThemeToggle />
       </SidebarHeader>
       <SidebarContent>

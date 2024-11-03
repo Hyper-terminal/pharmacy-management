@@ -5,18 +5,20 @@ import {
 import AppSidebar from '@/src/renderer/components/AppSidebar';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import {ThemeProvider} from '@/src/renderer/components/ThemeProvider';
+import { ThemeProvider } from '@/src/renderer/components/ThemeProvider';
 
 export default function MainLayout() {
   return (
     <ThemeProvider>
-    <SidebarProvider>
-      <AppSidebar />
-      <>
-        <SidebarTrigger />
-        <Outlet />
-      </>
-    </SidebarProvider>
+
+      <SidebarProvider>
+        <AppSidebar />
+        <>
+          <SidebarTrigger className="mt-3"/>
+
+          <Outlet />
+        </>
+      </SidebarProvider>
     </ThemeProvider>
   );
 }
