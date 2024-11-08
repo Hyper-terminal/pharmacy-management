@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { createInitialData } from "@/src/main/schema/seed";
 
 class AppUpdater {
   constructor() {
@@ -126,8 +127,10 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
+    await createInitialData();
     createWindow();
+
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
