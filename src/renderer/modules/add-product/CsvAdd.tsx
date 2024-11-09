@@ -5,7 +5,7 @@ import { FileTextIcon } from "lucide-react";
 export default function CsvAdd() {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  
+
   const dropZoneRef = useRef(null);
   const fileIconRef = useRef(null);
   const fileInfoRef = useRef(null);
@@ -46,25 +46,45 @@ export default function CsvAdd() {
     <div className="mt-8">
       <div
         ref={dropZoneRef}
-        className={`border-2 border-dashed rounded-lg p-12 text-center transition-all ${
-          isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
-        }`}
+        className={`relative border-2 border-dashed rounded-lg p-12 text-center transition-all duration-300
+          ${isDragging
+            ? "border-transparent bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20"
+            : "border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500"
+          }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className="flex flex-col items-center gap-4">
-          <div 
-            ref={fileIconRef}
-            className="transition-transform hover:scale-110"
-          >
-            <FileTextIcon className="h-12 w-12 text-gray-400" />
+        {/* Animated border on drag */}
+        {isDragging && (
+          <div className="absolute inset-0 rounded-lg animate-border bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 [mask:linear-gradient(white,white) padding-box,linear-gradient(white,white)]">
+            <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent" />
           </div>
-          <div>
-            <p className="text-xl font-medium">
+        )}
+
+        <div className="relative flex flex-col items-center gap-6">
+          <div
+            ref={fileIconRef}
+            className={`transition-all duration-300 transform ${
+              isDragging ? "scale-110" : "hover:scale-110"
+            }`}
+          >
+            <div className="relative">
+              <FileTextIcon className={`h-16 w-16 transition-colors duration-300 ${
+                isDragging
+                  ? "text-blue-500"
+                  : "text-gray-400 dark:text-gray-500"
+              }`} />
+              {isDragging && (
+                <div className="absolute inset-0 rounded-full animate-pulse bg-blue-500/20" />
+              )}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xl font-medium dark:text-gray-200">
               Drag and drop your CSV file here
             </p>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               or click to browse from your computer
             </p>
           </div>
@@ -77,30 +97,34 @@ export default function CsvAdd() {
           />
           <label
             htmlFor="csv-upload"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer transition-colors hover:scale-105 transform duration-200"
+            className="relative px-6 py-2.5 rounded-md cursor-pointer group"
           >
-            Browse Files
+            <div className="absolute inset-0 transition-opacity rounded-md opacity-100 animate-border bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 group-hover:opacity-90" />
+            <span className="relative font-medium text-white">Browse Files</span>
           </label>
         </div>
       </div>
 
       {file && (
-        <div 
+        <div
           ref={fileInfoRef}
-          className="mt-4 p-4 bg-gray-50 rounded-lg transition-all"
+          className="p-4 mt-4 duration-500 rounded-lg bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-blue-500/10 dark:from-purple-500/5 dark:via-pink-500/5 dark:to-blue-500/5 backdrop-blur-sm animate-in fade-in-0"
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <FileTextIcon className="h-5 w-5 text-gray-500" />
-              <span className="font-medium">{file.name}</span>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-md bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20">
+                <FileTextIcon className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+              </div>
+              <span className="font-medium dark:text-gray-200">{file.name}</span>
             </div>
             <Button
               variant="destructive"
               size="sm"
               onClick={handleRemoveFile}
-              className="hover:scale-105 transform transition-transform duration-200"
+              className="relative overflow-hidden group"
             >
-              Remove
+              <span className="relative z-10">Remove</span>
+              <div className="absolute inset-0 transition-transform duration-300 transform scale-x-0 bg-red-600 group-hover:scale-x-100" />
             </Button>
           </div>
         </div>

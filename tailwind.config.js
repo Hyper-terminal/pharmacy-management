@@ -66,10 +66,45 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        gradient: {
+          '0%, 100%': { 'background-position': '0% 50%' },
+          '50%': { 'background-position': '100% 50%' },
+        },
+        'gradient-vertical': {
+          '0%, 100%': { 'background-position': '50% 0%' },
+          '50%': { 'background-position': '50% 100%' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translate(-50%, -10px)' },
+          '100%': { opacity: '1', transform: 'translate(-50%, 0)' },
+        },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        'shimmer-vertical': {
+          '0%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(100%)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translate(-50%, 0px)' },
+          '50%': { transform: 'translate(-50%, -4px)' },
+        },
+        border: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'gradient': 'gradient 3s linear infinite',
+        'gradient-vertical': 'gradient-vertical 3s linear infinite',
+        'fade-in': 'fadeIn 0.2s ease-in',
+        'shimmer': 'shimmer 2s linear infinite',
+        'shimmer-vertical': 'shimmer-vertical 2s linear infinite',
+        'float': 'float 3s ease-in-out infinite',
+        'border': 'border 4s linear infinite',
       },
       sidebar: {
         DEFAULT: 'hsl(var(--sidebar-background))',

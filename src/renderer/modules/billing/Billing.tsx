@@ -3,6 +3,7 @@ import { Button } from '@/src/renderer/components/ui/Button';
 import TopBarLoader from '@/src/renderer/components/ui/TopBarLoader';
 import { Input } from '@/src/renderer/components/ui/Input';
 import { PlusIcon, PrinterIcon, TrashIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Billing() {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,14 +40,30 @@ export default function Billing() {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       {isLoading && <TopBarLoader text="Generating Bill..." />}
 
       <section className="flex flex-col gap-6 mt-10">
-        <h2 className="text-2xl font-bold">Billing</h2>
+        <motion.h2
+          className="text-2xl font-bold"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          Billing
+        </motion.h2>
 
         <div className="flex gap-4">
-          <div className="w-2/3 flex flex-col gap-4">
+          <motion.div
+            className="flex flex-col w-2/3 gap-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
             <div className="flex gap-2">
               <Input
                 type="search"
@@ -56,14 +73,18 @@ export default function Billing() {
                 className="flex-1"
               />
               <Button onClick={handleAddItem}>
-                <PlusIcon className="h-4 w-4 mr-2" />
+                <PlusIcon className="w-4 h-4 mr-2" />
                 Add Item
               </Button>
             </div>
 
-            <div className="border rounded-lg p-4">
-              {/* Header */}
-              <div className="grid grid-cols-5 gap-4 pb-2 border-b font-semibold">
+            <motion.div
+              className="p-4 border rounded-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="grid grid-cols-5 gap-4 pb-2 font-semibold border-b">
                 <div className="text-left">Product</div>
                 <div className="text-right">Quantity</div>
                 <div className="text-right">Price</div>
@@ -71,10 +92,16 @@ export default function Billing() {
                 <div className="text-right">Action</div>
               </div>
 
-              {/* Bill Items */}
-              <div className="flex flex-col">
+              <AnimatePresence mode="popLayout">
                 {billItems.map((item) => (
-                  <div key={item.id} className="grid grid-cols-5 gap-4 py-3 border-b items-center">
+                  <motion.div
+                    key={item.id}
+                    className="grid items-center grid-cols-5 gap-4 py-3 border-b"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
                     <div className="text-left">{item.name}</div>
                     <div className="text-right">{item.quantity}</div>
                     <div className="text-right">${item.price.toFixed(2)}</div>
@@ -85,42 +112,68 @@ export default function Billing() {
                         size="sm"
                         onClick={() => handleRemoveItem(item.id)}
                       >
-                        <TrashIcon className="h-4 w-4" />
+                        <TrashIcon className="w-4 h-4" />
                       </Button>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
-            </div>
-          </div>
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
 
-          <div className="w-1/3 border rounded-lg p-4">
-            <h3 className="text-xl font-semibold mb-4">Bill Summary</h3>
+          <motion.div
+            className="w-1/3 p-4 border rounded-lg"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <h3 className="mb-4 text-xl font-semibold">Bill Summary</h3>
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between">
+              <motion.div
+                className="flex justify-between"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
                 <span>Subtotal:</span>
                 <span>${calculateTotal().toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
+              </motion.div>
+              <motion.div
+                className="flex justify-between"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 }}
+              >
                 <span>Tax (5%):</span>
                 <span>${(calculateTotal() * 0.05).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t">
+              </motion.div>
+              <motion.div
+                className="flex justify-between pt-2 mt-2 text-lg font-bold border-t"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
                 <span>Total:</span>
                 <span>${(calculateTotal() * 1.05).toFixed(2)}</span>
-              </div>
-              <Button
-                className="w-full mt-4"
-                onClick={handlePrintBill}
-                disabled={billItems.length === 0}
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
               >
-                <PrinterIcon className="h-4 w-4 mr-2" />
-                Print Bill
-              </Button>
+                <Button
+                  className="w-full mt-4"
+                  onClick={handlePrintBill}
+                  disabled={billItems.length === 0}
+                >
+                  <PrinterIcon className="w-4 h-4 mr-2" />
+                  Print Bill
+                </Button>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
-    </>
+    </motion.div>
   );
 }

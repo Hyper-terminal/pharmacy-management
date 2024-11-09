@@ -1,18 +1,17 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { singleProductSchema } from './schema';
-import { z } from "zod"
+import { Button } from "@/src/renderer/components/ui/Button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/src/renderer/components/ui/Form";
 import { Input } from "@/src/renderer/components/ui/Input";
-import { Button } from "@/src/renderer/components/ui/Button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { singleProductSchema } from './schema';
 
 export default function SingleProductAdd() {
   const form = useForm<z.infer<typeof singleProductSchema>>({
