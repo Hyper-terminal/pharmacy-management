@@ -1,11 +1,12 @@
-import { useState, useRef } from "react";
-import { Button } from "@/src/renderer/components/ui/Button";
-import { FileTextIcon } from "lucide-react";
+import { useState, useRef } from 'react';
+import { Button } from '@/src/renderer/components/ui/Button';
+import { FileTextIcon } from 'lucide-react';
+import { ipcRenderer } from 'electron';
 
 export default function CsvAdd() {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  
+
   const dropZoneRef = useRef(null);
   const fileIconRef = useRef(null);
   const fileInfoRef = useRef(null);
@@ -26,14 +27,14 @@ export default function CsvAdd() {
     setIsDragging(false);
 
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile?.type === "text/csv") {
+    if (droppedFile?.type === 'text/csv') {
       setFile(droppedFile);
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile?.type === "text/csv") {
+    if (selectedFile?.type === 'text/csv') {
       setFile(selectedFile);
     }
   };
@@ -42,19 +43,32 @@ export default function CsvAdd() {
     setFile(null);
   };
 
+  const addFiledata = async () => {
+    if (file) {
+      try {
+        const result = await ipcRenderer.invoke('import-csv', file); // Send file to main process
+        console.log(result); // Handle success
+      } catch (error) {
+        console.error('Error importing data:', error);
+      }
+    } else {
+      console.log('No file selected');
+    }
+  };
+
   return (
     <div className="mt-8">
       <div
         ref={dropZoneRef}
         className={`border-2 border-dashed rounded-lg p-12 text-center transition-all ${
-          isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
+          isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
         <div className="flex flex-col items-center gap-4">
-          <div 
+          <div
             ref={fileIconRef}
             className="transition-transform hover:scale-110"
           >
@@ -85,7 +99,7 @@ export default function CsvAdd() {
       </div>
 
       {file && (
-        <div 
+        <div
           ref={fileInfoRef}
           className="mt-4 p-4 bg-gray-50 rounded-lg transition-all"
         >
