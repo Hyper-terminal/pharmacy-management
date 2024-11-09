@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
-import { Button } from "@/src/renderer/components/ui/Button";
-import { FileTextIcon } from "lucide-react";
+import { Button } from '@/src/renderer/components/ui/Button';
+import { FileTextIcon } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 export default function CsvAdd() {
   const [isDragging, setIsDragging] = useState(false);
@@ -26,14 +26,14 @@ export default function CsvAdd() {
     setIsDragging(false);
 
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile?.type === "text/csv") {
+    if (droppedFile?.type === 'text/csv') {
       setFile(droppedFile);
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile?.type === "text/csv") {
+    if (selectedFile?.type === 'text/csv') {
       setFile(selectedFile);
     }
   };
@@ -41,6 +41,19 @@ export default function CsvAdd() {
   const handleRemoveFile = () => {
     setFile(null);
   };
+
+  // const addFiledata = async () => {
+  //   if (file) {
+  //     try {
+  //       const result = await ipcRenderer.invoke('import-csv', file); // Send file to main process
+  //       console.log(result); // Handle success
+  //     } catch (error) {
+  //       console.error('Error importing data:', error);
+  //     }
+  //   } else {
+  //     console.log('No file selected');
+  //   }
+  // };
 
   return (
     <div className="mt-8">

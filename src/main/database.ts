@@ -8,7 +8,7 @@ import betterSqlite3, { Database as DatabaseInstance } from 'better-sqlite3';
 class DatabaseService {
   private static instance: DatabaseService;
   private knex: any;
-  private readonly db: DatabaseInstance;
+  db: DatabaseInstance;
 
   private constructor(databasePath: string) {
     // Initialize better-sqlite3 for low-level database management
@@ -22,13 +22,14 @@ class DatabaseService {
       },
       useNullAsDefault: true,
     });
-
   }
 
   /**
    * Singleton pattern to ensure a single database connection throughout the app.
    */
-  public static getInstance(databasePath: string = './pharmacy.db'): DatabaseService {
+  public static getInstance(
+    databasePath: string = './pharmacy.db',
+  ): DatabaseService {
     if (!DatabaseService.instance) {
       DatabaseService.instance = new DatabaseService(databasePath);
     }
