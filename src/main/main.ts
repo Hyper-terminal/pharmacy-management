@@ -8,15 +8,14 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import { createInitialData } from '@/src/main/schema/seed';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
+import path from 'path';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { createInitialData } from '@/src/main/schema/seed';
-import dbService from './database';
-import Papa from 'papaparse';
+import './controllers';
 
 class AppUpdater {
   constructor() {
@@ -140,93 +139,3 @@ app
     });
   })
   .catch(console.log);
-
-let db = dbService.db;
-// Handle importing CSV file
-ipcMain.handle('import-csv', async (event, file) => {
-  try {
-    const csvData = await parseCSV(file);
-    await insertDataIntoDB(csvData); // Insert parsed data into the database
-    return 'Data import complete!';
-  } catch (error) {
-    console.error('Error in CSV import:', error);
-    throw new Error('Failed to import CSV');
-  }
-});
-
-// Parse the CSV file (from the file object in the renderer)
-function parseCSV(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      Papa.parse(reader.result, {
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-        complete: (result) => {
-          resolve(result.data);
-        },
-        error: (error) => {
-          reject(error);
-        },
-      });
-    };
-
-    reader.onerror = (err) => {
-      reject(err);
-    };
-
-    // Read file as text (this works with FileReader in the renderer process)
-    reader.readAsText(file);
-  });
-}
-
-// Insert parsed data into the SQLite database
-function insertDataIntoDB(data) {
-  const stmt = db.prepare(`
-      INSERT INTO medicinal_data (supplier, bill_no, date, company_code, barcode, item_name, pack, batch, expiry, qty, fq_qty, halfp, ftrate, srate, mrp, dis, excise, vat, adnl_vat, amount, localcent, scm1, scm2, scmp_per, hsn_code, cgst, sgst, igst, psr_lno, tcs_per, tcs_amt, alter_code, po_number)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-  db.transaction(() => {
-    data.forEach((row) => {
-      stmt.run(
-        row.supplier,
-        row.bill_no,
-        row.date,
-        row.company_code,
-        row.barcode,
-        row.item_name,
-        row.pack,
-        row.batch,
-        row.expiry,
-        row.qty,
-        row.fq_qty,
-        row.halfp,
-        row.ftrate,
-        row.srate,
-        row.mrp,
-        row.dis,
-        row.excise,
-        row.vat,
-        row.adnl_vat,
-        row.amount,
-        row.localcent,
-        row.scm1,
-        row.scm2,
-        row.scmp_per,
-        row.hsn_code,
-        row.cgst,
-        row.sgst,
-        row.igst,
-        row.psr_lno,
-        row.tcs_per,
-        row.tcs_amt,
-        row.alter_code,
-        row.po_number,
-      );
-    });
-  })();
-
-  console.log(`Inserted ${data.length} rows into the database.`);
-}

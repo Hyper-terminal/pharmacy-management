@@ -1,4 +1,4 @@
-import knex from 'knex';
+import knex, { Knex } from 'knex';
 import betterSqlite3, { Database as DatabaseInstance } from 'better-sqlite3';
 
 /**
@@ -7,7 +7,7 @@ import betterSqlite3, { Database as DatabaseInstance } from 'better-sqlite3';
  */
 class DatabaseService {
   private static instance: DatabaseService;
-  private knex: any;
+  private knex: Knex;
   db: DatabaseInstance;
 
   private constructor(databasePath: string) {
