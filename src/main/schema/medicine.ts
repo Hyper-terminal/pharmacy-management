@@ -14,8 +14,8 @@ export const createMedicinesTable = async (): Promise<void> => {
       table.string('name').notNullable(); // Name of the medicine
       table.string('hsn_code'); // HSN Code for GST
       table.decimal('total_qty', 10, 2);
-      // table.integer('batch_id');
-      table.foreign('batch_id').references('batch.id').onDelete('CASCADE');
+      table.integer('batch_id').unsigned();
+      table.foreign('batch_id').references('batches.id').onDelete('CASCADE');
 
       // table.decimal('average_amount')
     });

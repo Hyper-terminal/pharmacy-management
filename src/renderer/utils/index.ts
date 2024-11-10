@@ -31,6 +31,7 @@ export const mapCsvToInterfaces = (csvData: any) => {
       barcode: csvData['BARCODE'],
       igst: csvData['IGST'],
       received_date: csvData['DATE'],
+      bill_number: csvData['BILL NO.'],
     },
   };
 };

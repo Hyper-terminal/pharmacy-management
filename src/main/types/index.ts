@@ -37,4 +37,5 @@ export interface BatchProps {
   sgst?: number;
   barcode?: string;
   igst?: number;
+  bill_number?: string;
 }

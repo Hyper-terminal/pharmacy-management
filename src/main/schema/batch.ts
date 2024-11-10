@@ -29,6 +29,7 @@ export const createBatchesTable = async () => {
     table.date('po_date'); // Purchase order date for the batch
     table.timestamps(true, true);
     table.string('supplier'); // Supplier name
+    table.string('bill_number'); // Bill number
     table.decimal('mrp', 10, 2); // MRP of the medicine
     table.string('manufacturer'); // Manufacturer name
     table.decimal('discount', 10, 2); // Discount rate
@@ -40,6 +41,7 @@ export const createBatchesTable = async () => {
     table.decimal('sgst', 10, 2).nullable(); // SGST rate
     table.string('barcode').unique(); // Unique barcode for the medicine
     table.decimal('igst', 10, 2).nullable(); // IGST rate
+    table.string('received_batch_id').nullable(); // Unique batch ID
 
     // Set foreign key relation to 'medicines' table
     // table.foreign('medicine_id').references('medicines.id').onDelete('CASCADE');

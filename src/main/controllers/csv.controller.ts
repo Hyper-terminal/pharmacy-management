@@ -19,8 +19,6 @@ export async function insertCsvMedicine(
     batch_id: batchIdArray[index], // Link to the corresponding batch
   }));
 
-  console.log({ medicineData: JSON.stringify(medicineData) });
-
   await trx('medicines').insert(medicineData);
 }
 
@@ -45,6 +43,7 @@ export async function insertCsvBatch(
     expiry_date: item.batchProps.expiry_date,
     received_date: item.batchProps.received_date,
     batch_code: newBatchCode,
+    received_batch_id: item.batchProps.batch_code,
     f_qty: item.batchProps.f_qty,
     half_qty: item.batchProps.half_qty,
     purchase_rate: item.batchProps.purchase_rate,
@@ -70,6 +69,7 @@ export async function insertCsvBatch(
     sgst: item.batchProps.sgst,
     barcode: item.batchProps.barcode,
     igst: item.batchProps.igst,
+    bill_number: item.batchProps.bill_number,
   }));
 
   // Insert batches and get their IDs

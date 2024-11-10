@@ -118,8 +118,9 @@ export default function CsvAdd({ onSetLoader, isLoading }: ICsvAdd) {
           'import-csv',
           parsedData,
         ); // Send file to main process
-        console.log(result);
 
+        if (!result?.success) throw new Error('Failed to import data');
+        setFile(null);
         onSetLoader(false);
       } catch (error) {
         console.error('Error importing data:', error);
