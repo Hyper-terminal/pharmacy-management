@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { parse } from 'papaparse';
 import { mapCsvToInterfaces } from '../../utils';
+import { toast } from 'sonner';
 
 interface ICsvAdd {
   onSetLoader: (value: boolean) => void;
@@ -120,6 +121,7 @@ export default function CsvAdd({ onSetLoader, isLoading }: ICsvAdd) {
         ); // Send file to main process
 
         if (!result?.success) throw new Error('Failed to import data');
+        toast.success('Data imported successfully');
         setFile(null);
         onSetLoader(false);
       } catch (error) {

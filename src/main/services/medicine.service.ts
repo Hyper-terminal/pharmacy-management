@@ -4,9 +4,9 @@ import {
   insertCsvBatch,
   insertCsvMedicine,
 } from '../controllers/csv.controller';
+import { getAllProducts } from '../controllers/medicine.controller';
 import dbService from '../database';
 import { BatchProps, MedicineProps } from '../types';
-import { getProducts } from '../controllers/medicine.controller';
 
 interface ICsvData {
   medicineProps: MedicineProps;
@@ -28,7 +28,7 @@ ipcMain.handle('import-csv', async (_event, file: ICsvData[]) => {
     });
 
     // Send a message to the renderer process to refresh the products list
-    const products = await getProducts();
+    const products = await getAllProducts();
     ipcMain.emit('get-products', products);
 
     return { success: true };
@@ -39,6 +39,7 @@ ipcMain.handle('import-csv', async (_event, file: ICsvData[]) => {
 });
 
 ipcMain.handle('get-products', async () => {
-  const products = await getProducts();
-  return products;
+  // const offset = (page - 1) * limit;
+  // return getProducts(offset, limit);
+  return getAllProducts();
 });
