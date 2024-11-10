@@ -5,6 +5,7 @@ import Products from '@/src/renderer/modules/products/Products';
 import AddProduct from "@/src/renderer/modules/add-product/AddProduct";
 import Billing from './modules/billing/Billing';
 import Setting from './modules/settings/Setting';
+import Batches from './modules/batches/Batches';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="add-product" element={<AddProduct />} />
           <Route path="billing" element={<Billing />} />
           <Route path="settings" element={<Setting />} />
+          <Route path="batches" element={<Batches />} />
         </Route>
       </Routes>
     </Router>

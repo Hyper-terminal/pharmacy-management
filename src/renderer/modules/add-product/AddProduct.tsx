@@ -11,7 +11,7 @@ export default function AddProduct() {
   const [currentTab, setCurrentTab] = useState<'single' | 'csv'>('single');
 
   const handleTabChange = (tab: 'single' | 'csv') => {
-    setIsLoading((prev) => !prev);
+    // setIsLoading((prev) => !prev);
     setCurrentTab(tab);
   };
 

@@ -2,11 +2,11 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '@/src/renderer/components/ui/Checkbox';
 
-import { MedicineProps } from '@/src/main/types';
+import { BatchProps } from '@/src/main/types';
 import { DataTableColumnHeader } from './data-table-column-header';
 import { DataTableRowActions } from './data-table-row-actions';
 
-export const columns: ColumnDef<MedicineProps>[] = [
+export const columns: ColumnDef<BatchProps>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -32,65 +32,67 @@ export const columns: ColumnDef<MedicineProps>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'id',
+    accessorKey: 'batch_number',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Code" />
+      <DataTableColumnHeader column={column} title="Batch Number" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue('batch_number')}</div>,
     enableSorting: true,
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'medicine_name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Medicine Name" />
     ),
     cell: ({ row }) => {
       return (
         <div className="flex space-x-2">
           <span className="max-w-[200px] truncate font-medium">
-            {row.getValue('name')}
+            {row.getValue('medicine_name')}
           </span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'hsn_code',
+    accessorKey: 'expiry_date',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="HSN Code" />
+      <DataTableColumnHeader column={column} title="Expiry Date" />
     ),
     cell: ({ row }) => {
       return (
         <div className="flex space-x-2">
           <span className="max-w-[200px] truncate font-medium">
-            {row.getValue('hsn_code')}
+            {row.getValue('expiry_date')}
           </span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'total_qty',
+    accessorKey: 'quantity',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Total Qty" />
+      <DataTableColumnHeader column={column} title="Quantity" />
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex w-[200px] items-center">
-          <span>{row.getValue('total_qty')}</span>
+        <div className="flex w-[100px] items-center">
+          <span>{row.getValue('quantity')}</span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'batch_id',
+    accessorKey: 'manufacturer',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Batch ID" />
+      <DataTableColumnHeader column={column} title="Manufacturer" />
     ),
     cell: ({ row }) => {
       return (
-        <div className="w-[80px]">
-          <span>{row.getValue('batch_id')}</span>
+        <div className="flex space-x-2">
+          <span className="max-w-[200px] truncate font-medium">
+            {row.getValue('manufacturer')}
+          </span>
         </div>
       );
     },

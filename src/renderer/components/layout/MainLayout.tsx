@@ -11,11 +11,10 @@ export default function MainLayout() {
     <ThemeProvider>
       <SidebarProvider>
         <AppSidebar />
-        <main className='p-4 overflow-hidden'>
+        <main className="w-full p-4 overflow-hidden">
           <SidebarTrigger />
 
-            <Outlet />
-
+          <Outlet />
         </main>
       </SidebarProvider>
     </ThemeProvider>

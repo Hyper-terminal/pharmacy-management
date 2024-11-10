@@ -15,7 +15,7 @@ import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import './controllers';
+import './services';
 
 class AppUpdater {
   constructor() {

@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
-  | 'import-csv';
+  | 'import-csv'
+  | 'get-products';
 
 const electronHandler = {
   ipcRenderer: {

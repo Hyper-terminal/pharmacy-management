@@ -1,39 +1,17 @@
-import { ipcMain } from 'electron';
-import dbService from '../database';
-import { BatchProps, MedicineProps } from '../types';
-import { Knex } from 'knex';
+import { MedicineProps } from '../types';
+import { BatchProps } from '../types';
 
 interface ICsvData {
   medicineProps: MedicineProps;
   batchProps: BatchProps;
 }
 
-// Handle importing CSV file
-ipcMain.handle('import-csv', async (_event, file: ICsvData[]) => {
-  const knex = dbService.getKnexConnection();
-
-  try {
-    // Start a transaction to ensure data consistency
-    await knex.transaction(async (trx: Knex.Transaction) => {
-      // First insert all batches and get their IDs
-      const { batchIdArray } = await insertCsvBatch(file, trx);
-
-      // Then insert medicines with corresponding batch IDs
-      await insertCsvMedicine(file, batchIdArray, trx);
-    });
-
-    return { success: true };
-  } catch (error) {
-    console.error('Error in CSV import:', error);
-    return { success: false, error: error };
-  }
-});
-
-async function insertCsvMedicine(
+export async function insertCsvMedicine(
   data: ICsvData[],
   batchIdArray: number[],
   trx: any,
 ): Promise<void> {
+  console.log('Inside insertCsvMedicine', { data, batchIdArray });
   const medicineData = data.map((item, index) => ({
     name: item.medicineProps.name,
     hsn_code: item.medicineProps.hsn_code,
@@ -41,10 +19,12 @@ async function insertCsvMedicine(
     batch_id: batchIdArray[index], // Link to the corresponding batch
   }));
 
-  trx('medicines').insert(medicineData);
+  console.log({ medicineData: JSON.stringify(medicineData) });
+
+  await trx('medicines').insert(medicineData);
 }
 
-async function insertCsvBatch(
+export async function insertCsvBatch(
   data: ICsvData[],
   trx: any,
 ): Promise<{ batchIdArray: number[] }> {

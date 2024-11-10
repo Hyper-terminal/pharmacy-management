@@ -1,4 +1,4 @@
-import { Package2, PlusCircle, Receipt, Search, Settings } from 'lucide-react';
+import { Package2, PlusCircle, Receipt, Settings, Package2Icon } from 'lucide-react';
 
 import { ThemeToggle } from '@/src/renderer/components/container/ThemeToggle';
 import {
@@ -32,9 +32,9 @@ const items = [
     icon: Receipt,
   },
   {
-    title: 'Search',
-    url: '#',
-    icon: Search,
+    title: 'Batches',
+    url: '/batches',
+    icon: Package2Icon,
   },
   {
     title: 'Settings',
