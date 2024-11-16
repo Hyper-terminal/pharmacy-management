@@ -16,8 +16,6 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
     // Execute the query with the search term, using wildcards for partial matching
     const results = stmt.all(`%${searchString}%`);
 
-    // Return the results
-    console.log(results);
     return results;
   } catch (error) {
     console.log('error in getting mediines search ', error);
