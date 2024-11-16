@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron';
 import dbService from '../database';
+import { getBills, getRecentBills } from '../controllers/bill.controller';
 
 ipcMain.handle('search-medicines', async (_event, searchString) => {
   try {
@@ -25,19 +26,19 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
 
 ipcMain.handle('add-bill', async (_event, billData) => {
   try {
-    // Access the low-level better-sqlite3 connection
-    billData = [
-      {
-        Name: 'my medicine',
-        'Medicine ID': 1,
-        'Batch ID': 1,
-        Discount: 12,
-        Tax: 1,
-        Qty: 3,
-        Price: 100,
-        'Final Price': 87,
-      },
-    ];
+    // // Access the low-level better-sqlite3 connection
+    // billData = [
+    //   {
+    //     Name: 'my medicine',
+    //     'Medicine ID': 1,
+    //     'Batch ID': 1,
+    //     Discount: 12,
+    //     Tax: 1,
+    //     Qty: 3,
+    //     Price: 100,
+    //     'Final Price': 87,
+    //   },
+    // ];
     const insert = dbService.getConnection().prepare(`INSERT INTO
       billing (name, medicines_id, batch_id,discount,tax,quantity_sold,price,final_price)
       VALUES (?, ?, ?,?, ?, ?,?, ?)`);
@@ -54,7 +55,7 @@ ipcMain.handle('add-bill', async (_event, billData) => {
         'Final Price': final_price,
       } = medi;
 
-      const results = insert.run(
+      insert.run(
         Name,
         medicine_id,
         batch_id,
@@ -64,15 +65,22 @@ ipcMain.handle('add-bill', async (_event, billData) => {
         Price,
         final_price,
       );
-      console.log(results);
     });
 
     // _event.reply('user-added', { id: result.lastInsertRowid });
 
     // console.log(results);
-    return true;
+    return {success: true};
   } catch (error) {
     console.log('error in adding bill to the billing table  ', error);
     return false;
   }
+});
+
+ipcMain.handle('get-bills', async () => {
+  return getBills();
+});
+
+ipcMain.handle('get-recent-bills', async () => {
+  return getRecentBills();
 });

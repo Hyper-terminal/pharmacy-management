@@ -5,6 +5,8 @@ export type Channels =
   | 'get-products'
   | 'get-batches'
   | 'search-medicines'
+  | 'get-bills'
+  | 'get-recent-bills'
   | 'add-bill';
 
 const electronHandler = {

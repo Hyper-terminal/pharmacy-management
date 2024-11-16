@@ -75,7 +75,9 @@ export default function AddMedicineDropdown({
           <span className="truncate">
             {field.value?.name || 'Search medicines...'}
           </span>
-          <span className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
+          <span
+            className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          >
             ▼
           </span>
         </Button>

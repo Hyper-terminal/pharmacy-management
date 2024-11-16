@@ -2,10 +2,10 @@ import { Badge } from '@/src/renderer/components/ui/Badge';
 import { Button } from '@/src/renderer/components/ui/Button';
 import { Input } from '@/src/renderer/components/ui/Input';
 import TopBarLoader from '@/src/renderer/components/ui/TopBarLoader';
-import { cn } from '@/src/renderer/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PrinterIcon, ReceiptIcon, SearchIcon, TrashIcon } from 'lucide-react';
+import { PrinterIcon, ReceiptIcon, SearchIcon } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -13,21 +13,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../../components/ui/Dialog';
+} from '../../../components/ui/Dialog';
 import Addbilling from './Addbilling';
+import { BillItem } from './BillItem';
+import RecentBills from './RecentBills';
+import { mapBillingFormFields } from '../schema';
 
 export default function Billing() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [billItems, setBillItems] = useState<
-    Array<{
-      id: string;
-      name: string;
-      quantity: number;
-      price: number;
-      total: number;
-    }>
-  >([]);
+  const [billItems, setBillItems] = useState<any[]>([]);
 
   const handleSearchProduct = (term: string) => {
     setSearchTerm(term);
@@ -43,9 +38,21 @@ export default function Billing() {
   };
 
   const handlePrintBill = () => {
-    setIsLoading(true);
-    // TODO: Implement bill printing functionality
-    setTimeout(() => setIsLoading(false), 2000);
+    try {
+      setIsLoading(true);
+      window.electron.ipcRenderer.invoke(
+        'add-bill',
+        billItems.map((item) => mapBillingFormFields(item)),
+      );
+    } catch (error) {
+      toast.error('Failed to generate bill');
+      setIsLoading(false);
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+        toast.success('Bill generated successfully!');
+      }, 1000);
+    }
   };
 
   const getTotalItems = () =>
@@ -110,94 +117,66 @@ export default function Billing() {
                   className="pl-10 transition-all duration-300 border-gray-200 rounded-full hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
-              <AddItemForm />
+              <AddItemForm setBillItems={setBillItems} />
             </div>
 
-            <motion.div
-              className={cn(
-                'p-6 border rounded-xl shadow-sm bg-white/50 backdrop-blur-sm',
-                'dark:bg-gray-900/50 dark:border-gray-800',
-                'transition-all duration-300',
-              )}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              <div className="grid grid-cols-5 gap-4 pb-3 mb-3 font-semibold border-b dark:border-gray-800">
-                <div className="text-left text-gray-600 dark:text-gray-400">
-                  Product
-                </div>
-                <div className="text-right text-gray-600 dark:text-gray-400">
-                  Quantity
-                </div>
-                <div className="text-right text-gray-600 dark:text-gray-400">
-                  Price
-                </div>
-                <div className="text-right text-gray-600 dark:text-gray-400">
-                  Total
-                </div>
-                <div className="text-right text-gray-600 dark:text-gray-400">
-                  Action
-                </div>
-              </div>
-
+            <motion.div className="space-y-4">
               <AnimatePresence mode="popLayout">
                 {billItems.length === 0 ? (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="py-12 text-center"
+                    className="flex flex-col items-center justify-center p-8 text-center border rounded-xl bg-background/50"
                   >
-                    <div className="relative inline-block">
-                      <ReceiptIcon className="w-16 h-16 mx-auto mb-3 opacity-20" />
+                    <div className="relative p-4">
+                      <ReceiptIcon className="w-12 h-12 text-muted-foreground/30" />
                       <motion.div
-                        className="absolute inset-0 rounded-full animate-ping"
-                        style={{
-                          background:
-                            'radial-gradient(circle, rgba(var(--primary-rgb), 0.2) 0%, transparent 70%)',
+                        className="absolute inset-0"
+                        animate={{
+                          scale: [1, 1.1, 1],
+                          opacity: [0.5, 0.8, 0.5],
                         }}
-                      />
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        }}
+                      >
+                        <div className="w-full h-full rounded-full bg-primary/10" />
+                      </motion.div>
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      No items added to the bill yet
-                    </p>
-                    <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
-                      Click &quot;Add Item&quot; to get started
+                    <h3 className="mt-4 text-lg font-medium">
+                      No Items in Bill
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Start by searching for products or click &quot;Add
+                      Item&quot;
                     </p>
                   </motion.div>
                 ) : (
-                  billItems.map((item, index) => (
-                    <motion.div
-                      key={item.id}
-                      className={cn(
-                        'grid items-center grid-cols-5 gap-4 py-3 transition-colors',
-                        'hover:bg-gray-50 dark:hover:bg-gray-800/50',
-                        'border-b dark:border-gray-800',
-                        index === billItems.length - 1 && 'border-b-0',
-                      )}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <div className="font-medium text-left">{item.name}</div>
-                      <div className="text-right">{item.quantity}</div>
-                      <div className="text-right">${item.price.toFixed(2)}</div>
-                      <div className="font-semibold text-right text-primary">
-                        ${item.total.toFixed(2)}
-                      </div>
-                      <div className="text-right">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleRemoveItem(item.id)}
-                          className="transition-all opacity-0 hover:scale-105 active:scale-95 group-hover:opacity-100"
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </motion.div>
-                  ))
+                  <div className="space-y-2">
+                    {billItems.map((item, index) => (
+                      <BillItem
+                        key={item.id}
+                        item={item}
+                        index={index}
+                        onRemove={handleRemoveItem}
+                        onUpdateQuantity={(name: string, newQty: number) => {
+                          setBillItems((items) =>
+                            items.map((item) =>
+                              item?.NAME?.name === name
+                                ? {
+                                    ...item,
+                                    QTY: newQty,
+                                    total: newQty * Number(item.PRICE),
+                                  }
+                                : item,
+                            ),
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
                 )}
               </AnimatePresence>
             </motion.div>
@@ -218,7 +197,7 @@ export default function Billing() {
                 transition={{ delay: 0.6 }}
               >
                 <span>Subtotal:</span>
-                <span>${calculateTotal().toFixed(2)}</span>
+                <span>${calculateTotal()?.toFixed(2)}</span>
               </motion.div>
               <motion.div
                 className="flex justify-between"
@@ -227,7 +206,7 @@ export default function Billing() {
                 transition={{ delay: 0.7 }}
               >
                 <span>Tax (5%):</span>
-                <span>${(calculateTotal() * 0.05).toFixed(2)}</span>
+                <span>${(calculateTotal() * 0.05)?.toFixed(2)}</span>
               </motion.div>
               <motion.div
                 className="flex justify-between pt-2 mt-2 text-lg font-bold border-t"
@@ -236,7 +215,7 @@ export default function Billing() {
                 transition={{ delay: 0.8 }}
               >
                 <span>Total:</span>
-                <span>${(calculateTotal() * 1.05).toFixed(2)}</span>
+                <span>${(calculateTotal() * 1.05)?.toFixed(2)}</span>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -249,10 +228,11 @@ export default function Billing() {
                   disabled={billItems.length === 0}
                 >
                   <PrinterIcon className="w-4 h-4 mr-2" />
-                  Print Bill
+                  Generate Bill
                 </Button>
               </motion.div>
             </div>
+            <RecentBills />
           </motion.div>
         </div>
       </section>
@@ -260,7 +240,11 @@ export default function Billing() {
   );
 }
 
-const AddItemForm = () => {
+const AddItemForm = ({
+  setBillItems,
+}: {
+  setBillItems: (items: any[]) => void;
+}) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -285,7 +269,7 @@ const AddItemForm = () => {
             ✨
           </DialogDescription>
         </DialogHeader>
-        <Addbilling />
+        <Addbilling setBillItems={setBillItems} />
       </DialogContent>
     </Dialog>
   );

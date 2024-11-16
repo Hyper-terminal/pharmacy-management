@@ -1,16 +1,39 @@
 import { z } from 'zod';
 
 export const Billingschema = z.object({
-  NAME: z.string(),
-  'MEDICINE ID': z.number(),
-  'BATCH ID': z.number(),
+  NAME: z.object({
+    name: z.string(),
+    id: z.number(),
+    batch_id: z.number(),
+    amount: z.number(),
+    manufacturer: z.string(),
+    total_qty: z.union([z.string(), z.number()]),
+  }),
+  'MEDICINE ID': z.union([z.string(), z.number()]),
+  'BATCH ID': z.union([z.string(), z.number()]),
   DATE: z.string(),
-  DISCOUNT: z.number(),
-  TAX: z.number(),
-  QTY: z.number(),
-  PRICE: z.number(),
-  'FINAL PRICE': z.number(),
+  DISCOUNT: z.union([z.string(), z.number()]),
+  TAX: z.union([z.string(), z.number()]),
+  QTY: z.union([z.string(), z.number()]).refine((val) => {
+    const num = Number(val);
+    return !isNaN(num) && num >= 1;
+  }, "Quantity must be at least 1"),
+  PRICE: z.union([z.string(), z.number()]),
+  'FINAL PRICE': z.union([z.string(), z.number()]),
   'CUSTOMER NAME': z.string(),
   'CUSTOMER PHONE': z.string(),
-  HSN: z.number(),
+  HSN: z.union([z.string(), z.number()]),
 });
+
+export const mapBillingFormFields = (data: any) => {
+  return {
+    Name: data.NAME?.name || '',
+    'Medicine ID': data.NAME?.id || 0,
+    'Batch ID': data.NAME?.batch_id || '',
+    Discount: data['DISCOUNT'] || 0,
+    Tax: data['TAX'] || 0,
+    Qty: data['QTY'] || 0,
+    Price: data['PRICE'] || 0,
+    'Final Price': data['FINAL PRICE'] || 0
+  };
+};

@@ -9,23 +9,26 @@ import {
 } from '@/src/renderer/components/ui/Form';
 import { Input } from '@/src/renderer/components/ui/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-// import { singleProductSchema } from './schema';
 import { motion } from 'framer-motion';
 import { Calculator, Receipt } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { Billingschema } from '../schema';
 import AddMedicineDropdown from './AddMedicineDropdown';
-import { Billingschema } from './schema';
 
-export default function Addbilling() {
-  const [isCalculating, setIsCalculating] = useState(false);
-
-  const form = useForm<z.infer<typeof Billingschema>>({
+export default function Addbilling({ setBillItems }: { setBillItems: any }) {
+  const form = useForm({
     resolver: zodResolver(Billingschema),
     defaultValues: {
-      NAME: '',
+      NAME: {
+        name: '',
+        id: 0,
+        batch_id: 0,
+        amount: 0,
+        manufacturer: '',
+        total_qty: 0,
+      },
       'MEDICINE ID': 0,
       'BATCH ID': 0,
       DATE: new Date().toISOString().split('T')[0],
@@ -40,13 +43,12 @@ export default function Addbilling() {
     },
   });
 
-  const watchQty = form.watch('QTY');
-  const watchPrice = form.watch('PRICE');
-  const watchDiscount = form.watch('DISCOUNT');
-  const watchTax = form.watch('TAX');
+  const watchQty = form.watch('QTY') as number;
+  const watchPrice = form.watch('PRICE') as number;
+  const watchDiscount = form.watch('DISCOUNT') as number;
+  const watchTax = form.watch('TAX') as number;
 
   useEffect(() => {
-    setIsCalculating(true);
     const timer = setTimeout(() => {
       const subtotal = watchQty * watchPrice;
       const discountAmount = (subtotal * watchDiscount) / 100;
@@ -55,18 +57,17 @@ export default function Addbilling() {
       const finalPrice = afterDiscount + taxAmount;
 
       form.setValue('FINAL PRICE', Number(finalPrice.toFixed(2)));
-      setIsCalculating(false);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [watchQty, watchPrice, watchDiscount, watchTax]);
+  }, [watchQty, watchPrice, watchDiscount, watchTax, form]);
 
-  async function onSubmit(values: z.infer<typeof Billingschema>) {
+  async function onSubmit(values: any) {
     try {
-      console.log(values, isCalculating);
-      toast.success('Bill added successfully!');
+      setBillItems((prev: any[]) => [...prev, values]);
+      toast.success('Item added successfully!');
     } catch (error) {
-      toast.error('Failed to add bill');
+      toast.error('Failed to add item');
     }
   }
 
@@ -252,7 +253,7 @@ export default function Addbilling() {
             type="submit"
             className="w-full transition-all duration-300 md:w-auto bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
           >
-            Add bill
+            Add Item
           </Button>
         </form>
       </Form>

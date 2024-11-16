@@ -1,12 +1,12 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
 import MainLayout from '@/src/renderer/components/layout/MainLayout';
-import Products from '@/src/renderer/modules/products/Products';
 import AddProduct from '@/src/renderer/modules/add-product/AddProduct';
-import Billing from './modules/billing/Billing';
-import Setting from './modules/settings/Setting';
+import Products from '@/src/renderer/modules/products/Products';
+import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
+import './App.css';
 import Batches from './modules/batches/Batches';
+import BillingHomescreen from './modules/billing/BillingHomescreen';
 import Expiring from './modules/expiring/Expiring';
+import Setting from './modules/settings/Setting';
 
 export default function App() {
   return (
@@ -15,7 +15,7 @@ export default function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Products />} />
           <Route path="add-product" element={<AddProduct />} />
-          <Route path="billing" element={<Billing />} />
+          <Route path="billing" element={<BillingHomescreen />} />
           <Route path="settings" element={<Setting />} />
           <Route path="batches" element={<Batches />} />
           <Route path="expiring" element={<Expiring />} />
