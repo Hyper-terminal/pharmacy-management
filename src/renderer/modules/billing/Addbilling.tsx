@@ -34,6 +34,7 @@ export default function Addbilling() {
 
   function onSubmit(values: z.infer<typeof Billingschema>) {
     console.log(values);
+    window.electron.ipcRenderer.invoke('add-bill', '');
   }
   async function handelMedicinesearch(e: any) {
     const incoming_data: string = e.target.value;

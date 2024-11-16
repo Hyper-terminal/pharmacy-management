@@ -4,7 +4,8 @@ export type Channels =
   | 'import-csv'
   | 'get-products'
   | 'get-batches'
-  | 'search-medicines';
+  | 'search-medicines'
+  | 'add-bill';
 
 const electronHandler = {
   ipcRenderer: {
