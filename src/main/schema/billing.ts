@@ -30,6 +30,7 @@ export const createBillingTable = async (): Promise<void> => {
       table.string('customer_phone');
       table.string('hsn_code');
       table.integer('bill_no').unsigned();
+      table.timestamps(true, true);
 
       // table.decimal('average_amount')
     });

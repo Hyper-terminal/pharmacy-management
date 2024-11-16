@@ -1,4 +1,11 @@
-import { Package2, PlusCircle, Receipt, Settings, Package2Icon } from 'lucide-react';
+import {
+  Package2,
+  PlusCircle,
+  Receipt,
+  Settings,
+  Package2Icon,
+  ShieldAlert,
+} from 'lucide-react';
 
 import { ThemeToggle } from '@/src/renderer/components/container/ThemeToggle';
 import {
@@ -37,6 +44,11 @@ const items = [
     icon: Package2Icon,
   },
   {
+    title: 'Expiring',
+    url: '/expiring',
+    icon: ShieldAlert,
+  },
+  {
     title: 'Settings',
     url: '/settings',
     icon: Settings,
@@ -47,7 +59,8 @@ export default function AppSidebar() {
   const location = useLocation();
 
   // get active item based on the url
-  const activeItem = items.find((item) => item.url === location.pathname) || items[0];
+  const activeItem =
+    items.find((item) => item.url === location.pathname) || items[0];
 
   return (
     <Sidebar className="p-4">
@@ -69,9 +82,7 @@ export default function AppSidebar() {
                   key={item.title}
                 >
                   <SidebarMenuButton asChild>
-                    <Link
-                      to={item.url}
-                      >
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

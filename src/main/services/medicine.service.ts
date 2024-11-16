@@ -41,5 +41,6 @@ ipcMain.handle('import-csv', async (_event, file: ICsvData[]) => {
 ipcMain.handle('get-products', async () => {
   // const offset = (page - 1) * limit;
   // return getProducts(offset, limit);
+  // console.log('this is get all products ', await getAllProducts());
   return getAllProducts();
 });
