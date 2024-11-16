@@ -4,17 +4,23 @@ import TopBarLoader from '@/src/renderer/components/ui/TopBarLoader';
 import { Input } from '@/src/renderer/components/ui/Input';
 import { PlusIcon, PrinterIcon, TrashIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Addbilling from './Addbilling';
+// import DataTable from '@/src/renderer/modules/products/table/components/data-table';
+// import { columns } from '@/src/renderer/modules/products/table/components/columns';
 
 export default function Billing() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showAdditem, setShowaddItem] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [billItems, setBillItems] = useState<Array<{
-    id: string;
-    name: string;
-    quantity: number;
-    price: number;
-    total: number;
-  }>>([]);
+  const [billItems, setBillItems] = useState<
+    Array<{
+      id: string;
+      name: string;
+      quantity: number;
+      price: number;
+      total: number;
+    }>
+  >([]);
 
   const handleSearchProduct = (term: string) => {
     setSearchTerm(term);
@@ -22,11 +28,12 @@ export default function Billing() {
   };
 
   const handleAddItem = () => {
+    setShowaddItem(!showAdditem);
     // TODO: Implement add item to bill functionality
   };
 
   const handleRemoveItem = (id: string) => {
-    setBillItems(billItems.filter(item => item.id !== id));
+    setBillItems(billItems.filter((item) => item.id !== id));
   };
 
   const calculateTotal = () => {
@@ -48,6 +55,7 @@ export default function Billing() {
       {isLoading && <TopBarLoader text="Generating Bill..." />}
 
       <section className="flex flex-col gap-6 mt-10">
+        {showAdditem ? <Additemform /> : null}
         <motion.h2
           className="text-2xl font-bold"
           initial={{ opacity: 0, x: -20 }}
@@ -177,3 +185,12 @@ export default function Billing() {
     </motion.div>
   );
 }
+
+const Additemform = () => {
+  return (
+    <div>
+      <div className="overflow-x-auto "></div>
+      <Addbilling />
+    </div>
+  );
+};

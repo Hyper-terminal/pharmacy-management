@@ -3,7 +3,8 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 export type Channels =
   | 'import-csv'
   | 'get-products'
-  | 'get-batches';
+  | 'get-batches'
+  | 'search-medicines';
 
 const electronHandler = {
   ipcRenderer: {
