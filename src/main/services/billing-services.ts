@@ -31,18 +31,6 @@ ipcMain.handle('add-bill', async (_event, billData) => {
         Name: 'my medicine',
         'Medicine ID': 1,
         'Batch ID': 1,
-        Date: '',
-        Discount: 12,
-        Tax: 1,
-        Qty: 3,
-        Price: 100,
-        'Final Price': 87,
-      },
-      {
-        Name: 'medicine 2',
-        'Medicine ID': 1,
-        'Batch ID': 1,
-        Date: '',
         Discount: 12,
         Tax: 1,
         Qty: 3,
@@ -50,8 +38,8 @@ ipcMain.handle('add-bill', async (_event, billData) => {
         'Final Price': 87,
       },
     ];
-    const insert = dbService.getConnection().prepare(`INSERT INTO 
-      billing (name, medicines_id, batch_id,discount,tax,quantity_sold,price,final_price) 
+    const insert = dbService.getConnection().prepare(`INSERT INTO
+      billing (name, medicines_id, batch_id,discount,tax,quantity_sold,price,final_price)
       VALUES (?, ?, ?,?, ?, ?,?, ?)`);
 
     billData.forEach((medi: any) => {
