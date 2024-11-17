@@ -121,9 +121,11 @@ export default function CsvAdd({ onSetLoader, isLoading }: ICsvAdd) {
         ); // Send file to main process
 
         if (!result?.success) throw new Error('Failed to import data');
-        toast.success('Data imported successfully');
-        setFile(null);
-        onSetLoader(false);
+        setTimeout(() => {
+          toast.success('Data imported successfully');
+          setFile(null);
+          onSetLoader(false);
+        }, 1500);
       } catch (error) {
         console.error('Error importing data:', error);
         onSetLoader(false);

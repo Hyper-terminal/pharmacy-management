@@ -38,6 +38,7 @@ export const getBills = async (): Promise<Bill[]> => {
       }),
     );
 
+    // dbService.close();
     return billsWithItems;
   } catch (error) {
     console.error('Error getting bills:', error);
@@ -51,5 +52,6 @@ export const getRecentBills = async (): Promise<Bill[]> => {
     .select('*')
     .orderBy('created_at', 'desc')
     .limit(5);
+  // dbService.close();
   return recentBills;
 };

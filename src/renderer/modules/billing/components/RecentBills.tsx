@@ -20,7 +20,7 @@ export default function RecentBills() {
       try {
         const recentBills =
           await window.electron.ipcRenderer.invoke('get-recent-bills');
-        setBills(recentBills);
+        setBills(recentBills as Bill[] || []);
       } catch (error) {
         console.error('Error fetching recent bills:', error);
       } finally {
@@ -29,6 +29,15 @@ export default function RecentBills() {
     };
 
     fetchRecentBills();
+
+    window.electron.ipcRenderer.on('emit-recent-bills', (...args: unknown[]) => {
+      console.log(args);
+      setBills(args[0] as Bill[] || []);
+    });
+
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('emit-recent-bills');
+    };
   }, []);
 
   if (isLoading) {

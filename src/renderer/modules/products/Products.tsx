@@ -14,7 +14,6 @@ export default function Products() {
 
     window.electron.ipcRenderer.on('get-products', (...args: unknown[]) => {
       const data = args[1] as MedicineProps[];
-      debugger;
       setProducts(data);
     });
 

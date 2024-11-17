@@ -104,7 +104,7 @@ export default function AddMedicineDropdown({
               )}
             </CommandEmpty>
             <CommandGroup>
-              {medicines.map((medicine) => (
+              {medicines?.map((medicine) => (
                 <CommandItem
                   key={medicine.id}
                   onSelect={() => {

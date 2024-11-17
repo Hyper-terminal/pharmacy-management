@@ -7,7 +7,8 @@ export type Channels =
   | 'search-medicines'
   | 'get-bills'
   | 'get-recent-bills'
-  | 'add-bill';
+  | 'add-bill'
+  | 'emit-recent-bills';
 
 const electronHandler = {
   ipcRenderer: {
