@@ -9,7 +9,7 @@ export const createBillingTable = async (): Promise<void> => {
   const exists = await knex.schema.hasTable('billing');
 
   if (!exists) {
-    await knex.schema.createTableIfNotExists('billing', (table: any) => {
+    await knex.schema.createTable('billing', (table: any) => {
       table.increments('id').primary(); // Primary key for each medicine
       table.string('name').notNullable(); // Name of the medicine
       table.integer('medicines_id').unsigned();

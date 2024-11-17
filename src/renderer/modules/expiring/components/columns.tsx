@@ -60,12 +60,12 @@ export const columns: ColumnDef<BatchProps>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'batch_number',
+    accessorKey: 'batch_id',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Batch Number" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue('batch_number')}</div>
+      <div className="w-[80px]">{row.getValue('batch_id')}</div>
     ),
     enableSorting: true,
   },
@@ -78,7 +78,7 @@ export const columns: ColumnDef<BatchProps>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[200px] truncate font-medium">
-            {row.getValue('manufacturer')}
+            {row.getValue('name')}
           </span>
         </div>
       );

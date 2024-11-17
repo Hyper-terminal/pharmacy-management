@@ -32,6 +32,7 @@ export const mapCsvToInterfaces = (csvData: any) => {
       igst: csvData['IGST'],
       received_date: csvData['DATE'],
       bill_number: csvData['BILL NO.'],
+      pack: csvData['PACK'],
     },
   };
 };
