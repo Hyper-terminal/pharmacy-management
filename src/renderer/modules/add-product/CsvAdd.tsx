@@ -97,7 +97,7 @@ export default function CsvAdd({ onSetLoader, isLoading }: ICsvAdd) {
             mappedDataArray.push(mappedData);
           }
 
-          console.log({ original: parsedResult, mapped: mappedDataArray });
+          // console.log({ original: parsedResult, mapped: mappedDataArray });
           resolve(mappedDataArray); // Add resolve to return the parsed data
         }
       };
@@ -114,7 +114,7 @@ export default function CsvAdd({ onSetLoader, isLoading }: ICsvAdd) {
       try {
         onSetLoader(true);
         const parsedData = await parseCsv();
-        console.log(parsedData);
+        // console.log(parsedData);
         const result = await window.electron.ipcRenderer.invoke(
           'import-csv',
           parsedData,

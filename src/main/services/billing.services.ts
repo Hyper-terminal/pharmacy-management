@@ -26,22 +26,14 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
 
 ipcMain.handle('add-bill', async (_event, billData) => {
   try {
-    // // Access the low-level better-sqlite3 connection
-    // billData = [
-    //   {
-    //     Name: 'my medicine',
-    //     'Medicine ID': 1,
-    //     'Batch ID': 1,
-    //     Discount: 12,
-    //     Tax: 1,
-    //     Qty: 3,
-    //     Price: 100,
-    //     'Final Price': 87,
-    //   },
-    // ];
     const insert = dbService.getConnection().prepare(`INSERT INTO
       billing (name, medicines_id, batch_id,discount,tax,quantity_sold,price,final_price)
       VALUES (?, ?, ?,?, ?, ?,?, ?)`);
+
+    const updateProdqty = dbService.getConnection().prepare(`update medicines 
+        set total_qty=total_qty-? 
+        where batch_id=?
+        `);
 
     billData.forEach((medi: any) => {
       const {
@@ -65,12 +57,13 @@ ipcMain.handle('add-bill', async (_event, billData) => {
         Price,
         final_price,
       );
+      updateProdqty.run(Qty, batch_id);
     });
 
     // _event.reply('user-added', { id: result.lastInsertRowid });
 
     // console.log(results);
-    return {success: true};
+    return { success: true };
   } catch (error) {
     console.log('error in adding bill to the billing table  ', error);
     return false;

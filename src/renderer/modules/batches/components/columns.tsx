@@ -32,15 +32,17 @@ export const columns: ColumnDef<BatchProps>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'batch_number',
+    accessorKey: 'batch_id',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Batch Number" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue('batch_number')}</div>,
+    cell: ({ row }) => (
+      <div className="w-[80px]">{row.getValue('batch_id')}</div>
+    ),
     enableSorting: true,
   },
   {
-    accessorKey: 'medicine_name',
+    accessorKey: 'name',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Medicine Name" />
     ),
@@ -48,7 +50,7 @@ export const columns: ColumnDef<BatchProps>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[200px] truncate font-medium">
-            {row.getValue('medicine_name')}
+            {row.getValue('name')}
           </span>
         </div>
       );
@@ -70,9 +72,22 @@ export const columns: ColumnDef<BatchProps>[] = [
     },
   },
   {
+    accessorKey: 'pack',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Packs" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex w-[100px] items-center">
+          <span>{row.getValue('pack')}</span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: 'quantity',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Quantity" />
+      <DataTableColumnHeader column={column} title="Total Quantity (tablets)" />
     ),
     cell: ({ row }) => {
       return (

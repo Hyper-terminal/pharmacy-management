@@ -5,17 +5,26 @@ interface ICsvData {
   medicineProps: MedicineProps;
   batchProps: BatchProps;
 }
-
+function convert2qty(qty: number, pack: string | undefined) {
+  // console.log(pack, typeof pack);
+  if (pack?.toLowerCase().includes('ml')) return qty;
+  const number = pack?.match(/\d+/);
+  if (number) Number(number[0]) * qty;
+  return 10 * qty;
+}
 export async function insertCsvMedicine(
   data: ICsvData[],
   batchIdArray: number[],
   trx: any,
 ): Promise<void> {
-  console.log('Inside insertCsvMedicine', { data, batchIdArray });
+  // console.log('Inside insertCsvMedicine', { data, batchIdArray });
   const medicineData = data.map((item, index) => ({
     name: item.medicineProps.name,
     hsn_code: item.medicineProps.hsn_code,
-    total_qty: item.medicineProps.total_qty,
+    total_qty: convert2qty(
+      item.batchProps.quantity + (item.batchProps.f_qty || 0),
+      item.batchProps.pack,
+    ),
     batch_id: batchIdArray[index], // Link to the corresponding batch
   }));
 
@@ -39,7 +48,10 @@ export async function insertCsvBatch(
   }
 
   const batchData = data.map((item) => ({
-    quantity: item.batchProps.quantity,
+    quantity: convert2qty(
+      item.batchProps.quantity + (item.batchProps.f_qty || 0),
+      item.batchProps.pack,
+    ),
     expiry_date: item.batchProps.expiry_date,
     received_date: item.batchProps.received_date,
     batch_code: newBatchCode,
@@ -70,6 +82,7 @@ export async function insertCsvBatch(
     barcode: item.batchProps.barcode,
     igst: item.batchProps.igst,
     bill_number: item.batchProps.bill_number,
+    pack: item.batchProps.pack,
   }));
 
   // Insert batches and get their IDs

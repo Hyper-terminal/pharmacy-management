@@ -16,7 +16,8 @@ interface ICsvData {
 // Handle importing CSV file
 ipcMain.handle('import-csv', async (_event, file: ICsvData[]) => {
   const knex = dbService.getKnexConnection();
-
+  // console.log(file);
+  // return;
   try {
     // Start a transaction to ensure data consistency
     await knex.transaction(async (trx: Knex.Transaction) => {
