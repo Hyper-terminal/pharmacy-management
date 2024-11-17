@@ -25,6 +25,13 @@ export const Billingschema = z.object({
   HSN: z.union([z.string(), z.number()]),
 });
 
+export const customerDetailsSchema = z.object({
+  customer_name: z.string().min(1, "Customer name is required"),
+  customer_phone: z.string().min(1, "Customer phone is required"),
+  doctor_name: z.string().min(1, "Doctor name is required"),
+  doctor_phone: z.string().min(1, "Doctor phone is required")
+});
+
 export const mapBillingFormFields = (data: any) => {
   return {
     Name: data.NAME?.name || '',

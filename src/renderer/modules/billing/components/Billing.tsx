@@ -3,7 +3,13 @@ import { Button } from '@/src/renderer/components/ui/Button';
 import { Input } from '@/src/renderer/components/ui/Input';
 import TopBarLoader from '@/src/renderer/components/ui/TopBarLoader';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PrinterIcon, ReceiptIcon, SearchIcon } from 'lucide-react';
+import {
+  PrinterIcon,
+  ReceiptIcon,
+  SearchIcon,
+  StethoscopeIcon,
+  UserIcon,
+} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -14,15 +20,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../../../components/ui/Dialog';
+import { customerDetailsSchema, mapBillingFormFields } from '../schema';
 import Addbilling from './Addbilling';
 import { BillItem } from './BillItem';
 import RecentBills from './RecentBills';
-import { mapBillingFormFields } from '../schema';
 
 export default function Billing() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [billItems, setBillItems] = useState<any[]>([]);
+  const [customerDetails, setCustomerDetails] = useState({
+    customer_name: '',
+    customer_phone: '',
+    doctor_name: '',
+    doctor_phone: '',
+  });
 
   const handleSearchProduct = (term: string) => {
     setSearchTerm(term);
@@ -39,11 +51,18 @@ export default function Billing() {
 
   const handlePrintBill = () => {
     try {
+      customerDetailsSchema.parse(customerDetails);
+    } catch (error) {
+      toast.error('Please fill in valid customer details');
+      return;
+    }
+
+    try {
       setIsLoading(true);
-      window.electron.ipcRenderer.invoke(
-        'add-bill',
-        billItems.map((item) => mapBillingFormFields(item)),
-      );
+      window.electron.ipcRenderer.invoke('add-bill', {
+        items: billItems.map((item) => mapBillingFormFields(item)),
+        customer: customerDetails,
+      });
     } catch (error) {
       toast.error('Failed to generate bill');
       setIsLoading(false);
@@ -95,6 +114,75 @@ export default function Billing() {
                   'Create a new bill'
                 )}
               </p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-2 gap-4 p-4 border rounded-lg bg-background/50"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <UserIcon className="w-5 h-5 text-primary" />
+              <h3 className="text-sm font-medium">Customer Details</h3>
+            </div>
+            <div className="space-y-2">
+              <Input
+                placeholder="Customer Name"
+                value={customerDetails.customer_name}
+                onChange={(e) =>
+                  setCustomerDetails((prev) => ({
+                    ...prev,
+                    customer_name: e.target.value,
+                  }))
+                }
+                className="transition-all duration-300"
+              />
+              <Input
+                placeholder="Customer Phone"
+                value={customerDetails.customer_phone}
+                onChange={(e) =>
+                  setCustomerDetails((prev) => ({
+                    ...prev,
+                    customer_phone: e.target.value,
+                  }))
+                }
+                className="transition-all duration-300"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <StethoscopeIcon className="w-5 h-5 text-primary" />
+              <h3 className="text-sm font-medium">Doctor Details</h3>
+            </div>
+            <div className="space-y-2">
+              <Input
+                placeholder="Doctor Name"
+                value={customerDetails.doctor_name}
+                onChange={(e) =>
+                  setCustomerDetails((prev) => ({
+                    ...prev,
+                    doctor_name: e.target.value,
+                  }))
+                }
+                className="transition-all duration-300"
+              />
+              <Input
+                placeholder="Doctor Phone"
+                value={customerDetails.doctor_phone}
+                onChange={(e) =>
+                  setCustomerDetails((prev) => ({
+                    ...prev,
+                    doctor_phone: e.target.value,
+                  }))
+                }
+                className="transition-all duration-300"
+              />
             </div>
           </div>
         </motion.div>
