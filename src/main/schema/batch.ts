@@ -39,7 +39,7 @@ export const createBatchesTable = async () => {
     table.decimal('amount', 10, 2).nullable(); // Total amount for this medicine
     table.decimal('cgst', 10, 2).nullable(); // CGST rate
     table.decimal('sgst', 10, 2).nullable(); // SGST rate
-    table.string('barcode').unique(); // Unique barcode for the medicine
+    table.string('barcode'); // Unique barcode for the medicine
     table.decimal('igst', 10, 2).nullable(); // IGST rate
     table.string('received_batch_id').nullable(); // Unique batch ID
     table.string('pack'); // Unique batch ID

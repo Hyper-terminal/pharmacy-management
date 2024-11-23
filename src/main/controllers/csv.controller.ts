@@ -7,9 +7,15 @@ interface ICsvData {
 }
 function convert2qty(qty: number, pack: string | undefined) {
   // console.log(pack, typeof pack);
-  if (pack?.toLowerCase().includes('ml')) return qty;
+  const units = ['ml', 'gm'];
+
+  if (units.some((unit) => pack?.toLowerCase().includes(unit))) {
+    return qty;
+  }
+
+  // if (pack?.toLowerCase().includes('ml')) return qty;
   const number = pack?.match(/\d+/);
-  if (number) Number(number[0]) * qty;
+  if (number) return Number(number[0]) * qty;
   return 10 * qty;
 }
 export async function insertCsvMedicine(
