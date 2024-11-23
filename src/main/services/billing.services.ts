@@ -10,7 +10,7 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
       dbService.getConnection().prepare(`
                   SELECT medicines.id,
                   medicines.name,
-                  medicines.total_qty,
+                  GROUP_CONCAT(medicines.total_qty) as total_qty,
                   GROUP_CONCAT(batches.id) AS batch_ids,            
                   GROUP_CONCAT(batches.manufacturer) AS manufacturers,
                   GROUP_CONCAT(batches.amount) AS amounts,
