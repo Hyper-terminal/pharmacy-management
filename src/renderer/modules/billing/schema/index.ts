@@ -2,12 +2,21 @@ import { z } from 'zod';
 
 export const Billingschema = z.object({
   NAME: z.object({
-    name: z.string(),
     id: z.number(),
-    batch_id: z.number(),
-    amount: z.number(),
-    manufacturer: z.string(),
+    name: z.string(),
     total_qty: z.union([z.string(), z.number()]),
+    batchData: z.array(z.object({
+      amount: z.string(),
+      batch_id: z.string(),
+      expiry_date: z.string(),
+      manufacturer: z.string()
+    })),
+    nearestExpiryBatch: z.object({
+      amount: z.string(),
+      batch_id: z.string(),
+      expiry_date: z.string(),
+      manufacturer: z.string()
+    })
   }),
   'MEDICINE ID': z.union([z.string(), z.number()]),
   'BATCH ID': z.union([z.string(), z.number()]),

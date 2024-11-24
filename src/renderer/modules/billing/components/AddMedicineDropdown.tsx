@@ -12,20 +12,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/src/renderer/components/ui/Popover';
+import { TransformedMedicineDropDownData } from '@/src/renderer/types';
+import { transformMedicineDropDownData } from '@/src/renderer/utils';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FieldValues } from 'react-hook-form';
 import { toast } from 'sonner';
 
-interface Medicine {
-  id: number;
-  name: string;
-  batch_id: string;
-  amount: number;
-}
 
 interface AddMedicineDropdownProps {
-  onSelect: (medicine: Medicine) => void;
+  onSelect: (medicine: TransformedMedicineDropDownData) => void;
   field: FieldValues;
 }
 
@@ -35,7 +31,7 @@ export default function AddMedicineDropdown({
 }: AddMedicineDropdownProps) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [medicines, setMedicines] = useState<TransformedMedicineDropDownData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -47,8 +43,9 @@ export default function AddMedicineDropdown({
             'search-medicines',
             searchTerm,
           );
-          console.log(result);
-          setMedicines(result);
+          const transformedData = transformMedicineDropDownData(result);
+          console.log(transformedData);
+          setMedicines(transformedData);
         } catch (error) {
           toast.error('Failed to search medicine');
           setMedicines([]);
@@ -119,10 +116,10 @@ export default function AddMedicineDropdown({
                     <span className="font-medium">{medicine.name}</span>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span className="px-1.5 py-0.5 rounded-md bg-accent">
-                        Batch: {medicine.batch_id}
+                        Batch: {medicine.nearestExpiryBatch.batch_id}
                       </span>
                       <span className="px-1.5 py-0.5 rounded-md bg-accent">
-                        Price: ₹{medicine.amount?.toFixed(2)}
+                        Price: ₹{Number(medicine.nearestExpiryBatch.amount).toFixed(2)}
                       </span>
                     </div>
                   </div>

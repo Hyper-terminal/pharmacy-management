@@ -15,10 +15,7 @@ import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from '../../../components/ui/Dialog';
 import { customerDetailsSchema, mapBillingFormFields } from '../schema';
 import Addbilling from './Addbilling';
@@ -347,16 +344,7 @@ const AddItemForm = ({
           </motion.div>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-transparent bg-gradient-to-r from-primary to-purple-500 bg-clip-text">
-            Add New Item
-          </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            Add a new item to your bill. Please fill in the item details below
-            ✨
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-h-[80vh] w-[60vw] overflow-y-auto backdrop-blur-xl">
         <Addbilling setBillItems={setBillItems} />
       </DialogContent>
     </Dialog>

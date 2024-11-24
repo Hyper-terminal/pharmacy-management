@@ -6,22 +6,21 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
   try {
     // Access the low-level better-sqlite3 connection
 
-    const stmt = //   .prepare('SELECT * FROM medicines WHERE name LIKE ?');
-      dbService.getConnection().prepare(`
+    const stmt = dbService.getConnection().prepare(`
                   SELECT medicines.id,
                   medicines.name,
                   GROUP_CONCAT(medicines.total_qty) as total_qty,
-                  GROUP_CONCAT(batches.id) AS batch_ids,            
+                  GROUP_CONCAT(batches.id) AS batch_ids,
                   GROUP_CONCAT(batches.manufacturer) AS manufacturers,
-                  GROUP_CONCAT(batches.amount) AS amounts,
+                  GROUP_CONCAT(batches.mrp) AS mrps,
                   GROUP_CONCAT(batches.expiry_date) AS expiry_dates
                   FROM medicines
                   INNER JOIN batches ON medicines.batch_id = batches.id
-                  WHERE medicines.name LIKE ? 
+                  WHERE medicines.name LIKE ?
                     AND medicines.total_qty > 0
                   GROUP BY medicines.name
                   ORDER BY batches.expiry_date ASC;
-                  
+
 `);
 
     // Execute the query with the search term, using wildcards for partial matching
