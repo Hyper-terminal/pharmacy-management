@@ -38,7 +38,7 @@ export default function Addbilling({ setBillItems }: { setBillItems: any }) {
         total_qty: '',
         batchData: [],
         nearestExpiryBatch: {
-          amount: '0',
+          mrp: '0',
           batch_id: '',
           expiry_date: '',
           manufacturer: '',
@@ -156,10 +156,7 @@ export default function Addbilling({ setBillItems }: { setBillItems: any }) {
                             );
                             form.setValue(
                               'PRICE',
-                              getPerPriceMedicine(
-                                String(medicine.total_qty),
-                                String(medicine.nearestExpiryBatch.amount),
-                              ),
+                              Number(medicine.nearestExpiryBatch.mrp),
                             );
                           }}
                           field={field}

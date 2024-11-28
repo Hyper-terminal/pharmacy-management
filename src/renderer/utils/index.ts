@@ -44,7 +44,7 @@ export const transformMedicineDropDownData = (
 ): TransformedMedicineDropDownData[] => {
   return data.map((item: MedicineDropDownData) => {
     const {
-      amounts,
+      mrps,
       batch_ids,
       expiry_dates,
       id,
@@ -56,12 +56,12 @@ export const transformMedicineDropDownData = (
     const batchIdsArray = batch_ids.split(',');
     const expiryDatesArray = expiry_dates.split(',');
     const manufacturersArray = manufacturers.split(',');
-    const amountsArray = amounts.split(',');
+    const mrpsArray = mrps.split(',');
 
     const batchData = expiryDatesArray.map(
       (_, index: number) => {
         return {
-          amount: amountsArray[index],
+          mrp: mrpsArray[index],
           batch_id: batchIdsArray[index],
           expiry_date: expiryDatesArray[index],
           manufacturer: manufacturersArray[index],

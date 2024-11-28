@@ -119,7 +119,7 @@ export default function AddMedicineDropdown({
                         Batch: {medicine.nearestExpiryBatch.batch_id}
                       </span>
                       <span className="px-1.5 py-0.5 rounded-md bg-accent">
-                        Price: ₹{Number(medicine.nearestExpiryBatch.amount).toFixed(2)}
+                        Price: ₹{Number(medicine.nearestExpiryBatch.mrp).toFixed(2)}
                       </span>
                     </div>
                   </div>

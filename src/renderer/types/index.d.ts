@@ -1,5 +1,5 @@
 export interface MedicineDropDownData {
-  amounts: string;
+  mrps: string;
   batch_ids: string;
   expiry_dates: string;
   id: number;
@@ -14,13 +14,13 @@ export interface TransformedMedicineDropDownData {
   name: string;
   total_qty: string;
   batchData: {
-    amount: string;
+    mrp: string;
     batch_id: string;
     expiry_date: string;
     manufacturer: string;
   }[];
   nearestExpiryBatch: {
-    amount: string;
+    mrp: string;
     batch_id: string;
     expiry_date: string;
     manufacturer: string;

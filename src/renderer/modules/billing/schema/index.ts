@@ -6,13 +6,13 @@ export const Billingschema = z.object({
     name: z.string(),
     total_qty: z.union([z.string(), z.number()]),
     batchData: z.array(z.object({
-      amount: z.string(),
+      mrp: z.string(),
       batch_id: z.string(),
       expiry_date: z.string(),
       manufacturer: z.string()
     })),
     nearestExpiryBatch: z.object({
-      amount: z.string(),
+      mrp: z.string(),
       batch_id: z.string(),
       expiry_date: z.string(),
       manufacturer: z.string()
