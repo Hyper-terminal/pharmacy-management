@@ -60,15 +60,17 @@ export default function Billing() {
       window.electron.ipcRenderer.invoke('add-bill', {
         items: billItems.map((item) => mapBillingFormFields(item)),
         customer: customerDetails,
+        original: billItems
       });
+       setTimeout(() => {
+        setIsLoading(false);
+        toast.success('Bill generated successfully!');
+      }, 1000);
     } catch (error) {
       toast.error('Failed to generate bill');
       setIsLoading(false);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-        toast.success('Bill generated successfully!');
-      }, 1000);
+     
     }
   };
 

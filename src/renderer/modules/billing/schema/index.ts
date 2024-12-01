@@ -42,10 +42,11 @@ export const customerDetailsSchema = z.object({
 });
 
 export const mapBillingFormFields = (data: any) => {
+  console.log({data})
   return {
     Name: data.NAME?.name || '',
     'Medicine ID': data.NAME?.id || 0,
-    'Batch ID': data.NAME?.batch_id || '',
+    'Batch ID': data['BATCH ID'] || '',
     Discount: data['DISCOUNT'] || 0,
     Tax: data['TAX'] || 0,
     Qty: data['QTY'] || 0,
