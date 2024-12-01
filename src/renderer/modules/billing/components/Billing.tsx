@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
-  DialogTrigger
+  DialogTrigger,
 } from '../../../components/ui/Dialog';
 import { customerDetailsSchema, mapBillingFormFields } from '../schema';
 import Addbilling from './Addbilling';
@@ -44,10 +44,13 @@ export default function Billing() {
   };
 
   const calculateTotal = () => {
-    return billItems.reduce((sum, item) => Number(sum) + Number(item.total), 0);
+    return billItems.reduce(
+      (sum, item) => Number(sum) + Number(item['FINAL PRICE']),
+      0,
+    );
   };
 
-  const handlePrintBill = () => {
+  const handlePrintBill = async () => {
     try {
       customerDetailsSchema.parse(customerDetails);
     } catch (error) {
@@ -57,12 +60,12 @@ export default function Billing() {
 
     try {
       setIsLoading(true);
-      window.electron.ipcRenderer.invoke('add-bill', {
+      await window.electron.ipcRenderer.invoke('add-bill', {
         items: billItems.map((item) => mapBillingFormFields(item)),
         customer: customerDetails,
-        original: billItems
       });
-       setTimeout(() => {
+
+      setTimeout(() => {
         setIsLoading(false);
         toast.success('Bill generated successfully!');
       }, 1000);
@@ -70,12 +73,13 @@ export default function Billing() {
       toast.error('Failed to generate bill');
       setIsLoading(false);
     } finally {
-     
     }
   };
 
   const getTotalItems = () =>
-    billItems.reduce((sum, item) => sum + item.quantity, 0);
+    billItems.reduce((sum, item) => sum + Number(item.QTY), 0);
+
+  console.log(billItems);
 
   return (
     <motion.div
@@ -296,7 +300,7 @@ export default function Billing() {
                 transition={{ delay: 0.6 }}
               >
                 <span>Subtotal:</span>
-                <span>${calculateTotal()?.toFixed(2)}</span>
+                <span>₹{calculateTotal()?.toFixed(2)}</span>
               </motion.div>
               <motion.div
                 className="flex justify-between"
@@ -305,7 +309,7 @@ export default function Billing() {
                 transition={{ delay: 0.7 }}
               >
                 <span>Tax (5%):</span>
-                <span>${(calculateTotal() * 0.05)?.toFixed(2)}</span>
+                <span>₹{(calculateTotal() * 0.05)?.toFixed(2)}</span>
               </motion.div>
               <motion.div
                 className="flex justify-between pt-2 mt-2 text-lg font-bold border-t"
@@ -313,8 +317,8 @@ export default function Billing() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
               >
-                  <span>Total:</span>
-                <span>${(calculateTotal() * 1.05)?.toFixed(2)}</span>
+                <span>Total:</span>
+                <span>₹{(calculateTotal() * 1.05)?.toFixed(2)}</span>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

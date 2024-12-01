@@ -4,16 +4,41 @@ import { cn } from '@/src/renderer/lib/utils';
 import { motion } from 'framer-motion';
 import { MinusCircle, PillIcon, PlusCircle, Trash2 } from 'lucide-react';
 
+interface BatchData {
+  mrp: string;
+  batch_id: string;
+  expiry_date: string;
+  manufacturer: string;
+}
+
+interface NearestExpiryBatch {
+  mrp: string;
+  batch_id: string;
+  expiry_date: string;
+  manufacturer: string;
+}
+
 interface BillItemProps {
   item: {
     id: string;
     NAME: {
+      id: number;
       name: string;
-      total_qty: number;
+      total_qty: string;
+      batchData: BatchData[];
+      nearestExpiryBatch: NearestExpiryBatch;
     };
+    'MEDICINE ID': number;
+    'BATCH ID': number;
+    DATE: string;
+    DISCOUNT: number;
+    TAX: number;
     QTY: string;
-    PRICE: string;
-    total: number;
+    PRICE: number;
+    'FINAL PRICE': number;
+    'CUSTOMER NAME': string;
+    'CUSTOMER PHONE': string;
+    HSN: number;
   };
   onRemove: (id: string) => void;
   onUpdateQuantity: (name: string, newQuantity: number) => void;
@@ -26,10 +51,6 @@ export function BillItem({
   onUpdateQuantity,
   index,
 }: BillItemProps) {
-  const getPerPrice = () => Number(item.PRICE) / Number(item.NAME?.total_qty);
-
-  const total = () => Number(item.QTY) * getPerPrice();
-
   return (
     <motion.div
       layout
@@ -63,7 +84,7 @@ export function BillItem({
               SKU: {item.id}
             </Badge>
             <span className="text-sm text-green-600 dark:text-green-500">
-              ${getPerPrice()?.toFixed(2)} each
+              ₹{Number(item.PRICE)?.toFixed(2)} each
             </span>
           </div>
         </div>
@@ -99,7 +120,7 @@ export function BillItem({
 
         <div className="text-right min-w-[100px]">
           <div className="text-lg font-semibold text-primary tabular-nums">
-            ${total()?.toFixed(2)}
+            ₹{item['FINAL PRICE']?.toFixed(2)}
           </div>
           <div className="text-xs text-muted-foreground">Total</div>
         </div>

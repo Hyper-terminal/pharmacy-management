@@ -347,7 +347,7 @@ export default function Addbilling({ setBillItems }: { setBillItems: any }) {
                               )}
                             />
                             <div className="absolute inset-y-0 flex items-center left-3 text-muted-foreground">
-                              {fieldName === 'PRICE' && '$'}
+                              {fieldName === 'PRICE' && '₹'}
                               {fieldName === 'QTY' && '#'}
                               {(fieldName === 'DISCOUNT' ||
                                 fieldName === 'TAX') &&
@@ -383,7 +383,7 @@ export default function Addbilling({ setBillItems }: { setBillItems: any }) {
                             className="h-12 pl-8 text-lg font-medium border-input bg-gradient-to-r from-primary/5 to-purple-500/5"
                           />
                           <div className="absolute inset-y-0 flex items-center left-3 text-primary">
-                            $
+                          ₹
                           </div>
                         </div>
                       </motion.div>

@@ -149,7 +149,7 @@ export default function RecentBills() {
                     {bill.items} items
                   </Badge>
                   <span className="font-medium text-gray-900 dark:text-gray-100">
-                    ${bill.total?.toFixed(2)}
+                  ₹{bill.total?.toFixed(2)}
                   </span>
                 </div>
               </motion.div>

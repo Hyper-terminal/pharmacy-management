@@ -51,7 +51,7 @@ WHERE batch_id = ?;`);
     const { customer_name, doctor_name, customer_phone, doctor_phone } =
       billData.customer;
 
-    billData.items.forEach((medi: any) => {
+    for (const medi of billData.items) {
       const {
         Name,
         'Medicine ID': medicine_id,
@@ -91,7 +91,7 @@ WHERE batch_id = ?;`);
         doctor_phone,
       );
       updateProdqty.run(Qty, batch_id);
-    });
+    }
 
     const recentBills = await getRecentBills();
     _event.sender.send('emit-recent-bills', recentBills);
