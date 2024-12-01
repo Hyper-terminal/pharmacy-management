@@ -60,11 +60,15 @@ export default function Billing() {
 
     try {
       setIsLoading(true);
-      await window.electron.ipcRenderer.invoke('add-bill', {
+      const billadd = await window.electron.ipcRenderer.invoke('add-bill', {
         items: billItems.map((item) => mapBillingFormFields(item)),
         customer: customerDetails,
       });
-
+      if (!billadd.success) {
+        setIsLoading(false);
+        toast.error(billadd.message);
+        return;
+      }
       setTimeout(() => {
         setIsLoading(false);
         toast.success('Bill generated successfully!');
@@ -72,7 +76,6 @@ export default function Billing() {
     } catch (error) {
       toast.error('Failed to generate bill');
       setIsLoading(false);
-    } finally {
     }
   };
 
