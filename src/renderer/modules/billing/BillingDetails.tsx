@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { ReceiptIcon, Search, Eye, CalendarIcon, ArrowLeftIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Badge } from '@/src/renderer/components/ui/Badge';
+import { Button } from '@/src/renderer/components/ui/Button';
+import { Card, CardHeader, CardTitle } from '@/src/renderer/components/ui/Card';
 import { Input } from '@/src/renderer/components/ui/Input';
 import {
   Table,
@@ -10,17 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/renderer/components/ui/Table';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/src/renderer/components/ui/Dialog';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Card, CardHeader, CardTitle } from '@/src/renderer/components/ui/Card';
-import { Badge } from '@/src/renderer/components/ui/Badge';
-import { Button } from '@/src/renderer/components/ui/Button';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowLeftIcon, CalendarIcon, Eye, ReceiptIcon, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface Bill {
   id: number;
@@ -44,34 +37,34 @@ interface Bill {
 
 export default function BillingDetails() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [bills, setBills] = useState<Bill[]>([]);
+  const [bills, setBills] = useState<Bill[] | null>(null);
   const [currentBill, setCurrentBill] = useState<Bill | null>(null);
   const [view, setView] = useState<'details' | 'history'>('history');
 
   const navigate = useNavigate();
-  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
 
-  const filteredBills = bills?.filter(bill => 
-    bill.customer_name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
-    bill.id?.toString()?.toLowerCase().includes(searchTerm?.toLowerCase())
+  const filteredBills = bills?.filter(
+    (bill) =>
+      bill.customer_name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+      bill.id?.toString()?.toLowerCase().includes(searchTerm?.toLowerCase())
   );
 
   useEffect(() => {
     // Fetch all bills first
     window.electron.ipcRenderer.invoke('get-bills').then(setBills);
-    
+
     // If ID exists, fetch specific bill and switch to details view
     if (id) {
-      window.electron.ipcRenderer.invoke('get-bill', Number(id))
-        .then(bill => {
-          setCurrentBill(bill);
-          setView('details');
-        });
+      window.electron.ipcRenderer.invoke('get-bill', Number(id)).then((bill) => {
+        setCurrentBill(bill);
+        setView('details');
+      });
     }
   }, [id]);
 
   const CurrentBillView = () => {
-    // If no current bill is selected, show a message
     if (!currentBill) {
       return (
         <motion.div
@@ -94,15 +87,14 @@ export default function BillingDetails() {
       >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-2xl font-bold">
-              Bill #{currentBill.id}
-            </CardTitle>
+            <CardTitle className="text-2xl font-bold">Bill #{currentBill.id}</CardTitle>
             <Badge variant="outline" className="text-sm">
               <CalendarIcon className="w-3 h-3 mr-1" />
               {new Date(currentBill.created_at).toLocaleDateString()}
             </Badge>
           </CardHeader>
           <div className="grid gap-6 p-6 md:grid-cols-2">
+            {/* Customer Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Customer Information</h3>
               <div className="space-y-2">
@@ -112,7 +104,7 @@ export default function BillingDetails() {
                 <p><span className="text-muted-foreground">Doctor Phone:</span> {currentBill.doctor_phone}</p>
               </div>
             </div>
-            
+            {/* Bill Summary */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Bill Summary</h3>
               <div className="space-y-3">
@@ -131,7 +123,7 @@ export default function BillingDetails() {
                   </div>
                   <p className="font-semibold">₹{Number(currentBill.final_price).toFixed(2)}</p>
                 </motion.div>
-                
+
                 <div className="pt-4 mt-4 border-t">
                   <div className="flex justify-between text-lg font-semibold">
                     <span>Total Amount</span>
@@ -145,6 +137,23 @@ export default function BillingDetails() {
       </motion.div>
     );
   };
+
+  const NoBillsView = () => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="flex flex-col items-center justify-center h-64 space-y-4"
+    >
+      <ReceiptIcon className="w-12 h-12 text-muted-foreground" />
+      <h2 className="text-2xl font-semibold text-muted-foreground">
+        No bills found!
+      </h2>
+      <p className="text-sm text-muted-foreground">
+        Looks like there are no bills yet. Start adding new bills to see them here.
+      </p>
+    </motion.div>
+  );
 
   return (
     <motion.div
@@ -179,7 +188,6 @@ export default function BillingDetails() {
               </p>
             </div>
           </div>
-          
           <div className="flex gap-2">
             <Button
               variant={view === 'details' ? 'default' : 'outline'}
@@ -196,7 +204,6 @@ export default function BillingDetails() {
             </Button>
           </div>
         </motion.div>
-
         <AnimatePresence mode="wait">
           {view === 'details' ? (
             <CurrentBillView />
@@ -207,51 +214,58 @@ export default function BillingDetails() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-4"
             >
-              <div className="relative">
-                <Search className="absolute w-4 h-4 left-3 top-3 text-muted-foreground" />
-                <Input
-                  placeholder="Search bills by ID or customer name..."
-                  className="pl-9"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-
-              <Card>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Bill ID</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Total Amount</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredBills.map((bill) => (
-                      <TableRow key={bill.id}>
-                        <TableCell className="font-medium">{bill.id}</TableCell>
-                        <TableCell>{new Date(bill.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell>{bill.customer_name}</TableCell>
-                        <TableCell>₹{bill.final_price?.toFixed(2)}</TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setCurrentBill(bill);
-                              setView('details');
-                            }}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Card>
+              {!bills || bills.length === 0 ? (
+                <NoBillsView />
+              ) : (
+                <>
+                  <div className="relative">
+                    <Search className="absolute w-4 h-4 left-3 top-3 text-muted-foreground" />
+                    <Input
+                      placeholder="Search bills by ID or customer name..."
+                      className="pl-9"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <Card>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Bill ID</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Customer</TableHead>
+                          <TableHead>Total Amount</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredBills?.map((bill) => (
+                          <TableRow key={bill.id}>
+                            <TableCell className="font-medium">{bill.id}</TableCell>
+                            <TableCell>
+                              {new Date(bill.created_at).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>{bill.customer_name}</TableCell>
+                            <TableCell>₹{bill.final_price?.toFixed(2)}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setCurrentBill(bill);
+                                  setView('details');
+                                }}
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Card>
+                </>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

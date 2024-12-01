@@ -20,7 +20,7 @@ export default function App() {
           <Route path="settings" element={<Setting />} />
           <Route path="batches" element={<Batches />} />
           <Route path="expiring" element={<Expiring />} />
-          <Route path="billing-details/:id" element={<BillingDetails />} />
+          <Route path="billing-details" element={<BillingDetails />} />
         </Route>
       </Routes>
     </Router>

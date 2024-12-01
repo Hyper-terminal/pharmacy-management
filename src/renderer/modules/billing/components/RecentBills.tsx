@@ -115,7 +115,7 @@ export default function RecentBills() {
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ scale: 1.01, x: 2 }}
                 transition={{ delay: index * 0.1 }}
-                onClick={() => navigate(`/billing-details/${bill.id}`)}
+                onClick={() => navigate(`/billing-details?id=${bill.id}`)}
                 className="flex items-center justify-between p-4 transition-all bg-white border border-gray-100 cursor-pointer dark:bg-gray-800/80 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/80 hover:shadow-md group"
               >
                 <div className="flex items-center gap-4">
