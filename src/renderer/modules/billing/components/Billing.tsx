@@ -31,6 +31,7 @@ export default function Billing() {
     customer_phone: '',
     doctor_name: '',
     doctor_phone: '',
+    doctor_registration: '',
   });
 
   const handleSearchProduct = (term: string) => {
@@ -43,7 +44,7 @@ export default function Billing() {
   };
 
   const calculateTotal = () => {
-    return billItems.reduce((sum, item) => sum + item.total, 0);
+    return billItems.reduce((sum, item) => Number(sum) + Number(item.total), 0);
   };
 
   const handlePrintBill = () => {
@@ -180,6 +181,17 @@ export default function Billing() {
                 }
                 className="transition-all duration-300"
               />
+              <Input
+                placeholder="Registration Number"
+                value={customerDetails.doctor_registration}
+                onChange={(e) =>
+                  setCustomerDetails((prev) => ({
+                    ...prev,
+                    doctor_registration: e.target.value,
+                  }))
+                }
+                className="transition-all duration-300"
+              />
             </div>
           </div>
         </motion.div>
@@ -299,7 +311,7 @@ export default function Billing() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
               >
-                <span>Total:</span>
+                  <span>Total:</span>
                 <span>${(calculateTotal() * 1.05)?.toFixed(2)}</span>
               </motion.div>
               <motion.div
