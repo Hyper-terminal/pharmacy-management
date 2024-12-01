@@ -55,3 +55,17 @@ export const getRecentBills = async (): Promise<Bill[]> => {
   // dbService.close();
   return recentBills;
 };
+
+export const getBill = async (id: number): Promise<Bill> => {
+  const knex = await dbService.getKnexConnection();
+  try {
+    const bill = await knex('billing')
+      .where({ id })
+      .first();
+      console.log({bill})
+    return bill || null;
+  } catch (error) {
+    console.error('Error getting bill:', error);
+    throw error;
+  }
+};

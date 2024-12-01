@@ -8,7 +8,8 @@ export type Channels =
   | 'get-bills'
   | 'get-recent-bills'
   | 'add-bill'
-  | 'emit-recent-bills';
+  | 'emit-recent-bills'
+  | 'get-bill';
 
 const electronHandler = {
   ipcRenderer: {

@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { getBills, getRecentBills } from '../controllers/bill.controller';
+import { getBill, getBills, getRecentBills } from '../controllers/bill.controller';
 import dbService from '../database';
 
 ipcMain.handle('search-medicines', async (_event, searchString) => {
@@ -110,4 +110,8 @@ ipcMain.handle('get-bills', async () => {
 
 ipcMain.handle('get-recent-bills', async () => {
   return getRecentBills();
+});
+
+ipcMain.handle('get-bill', async (_event, id) => {
+  return await getBill(Number(id));
 });

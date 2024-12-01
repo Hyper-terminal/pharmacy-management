@@ -7,6 +7,7 @@ import Batches from './modules/batches/Batches';
 import BillingHomescreen from './modules/billing/BillingHomescreen';
 import Expiring from './modules/expiring/Expiring';
 import Setting from './modules/settings/Setting';
+import BillingDetails from './modules/billing/BillingDetails';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="settings" element={<Setting />} />
           <Route path="batches" element={<Batches />} />
           <Route path="expiring" element={<Expiring />} />
+          <Route path="billing-details/:id" element={<BillingDetails />} />
         </Route>
       </Routes>
     </Router>

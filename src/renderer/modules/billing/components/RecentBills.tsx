@@ -2,6 +2,7 @@ import { Badge } from '@/src/renderer/components/ui/Badge';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRightIcon, ReceiptIcon, SparklesIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Bill {
   id: string;
@@ -14,6 +15,8 @@ interface Bill {
 export default function RecentBills() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRecentBills = async () => {
@@ -31,7 +34,6 @@ export default function RecentBills() {
     fetchRecentBills();
 
     window.electron.ipcRenderer.on('emit-recent-bills', (...args: unknown[]) => {
-      console.log(args);
       setBills(args[0] as Bill[] || []);
     });
 
@@ -70,6 +72,7 @@ export default function RecentBills() {
         <motion.button
           whileHover={{ scale: 1.02, x: 3 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => navigate('/billing-details')}
           className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 transition-all rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 group"
         >
           View All
@@ -112,6 +115,7 @@ export default function RecentBills() {
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ scale: 1.01, x: 2 }}
                 transition={{ delay: index * 0.1 }}
+                onClick={() => navigate(`/billing-details/${bill.id}`)}
                 className="flex items-center justify-between p-4 transition-all bg-white border border-gray-100 cursor-pointer dark:bg-gray-800/80 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/80 hover:shadow-md group"
               >
                 <div className="flex items-center gap-4">
