@@ -22,24 +22,10 @@ export const getBills = async (): Promise<Bill[]> => {
     // Get all bills
     const bills = await knex('billing')
       .select('*')
-      .orderBy('created_at', 'desc');
-
-    // Get bill items for each bill
-    const billsWithItems = await Promise.all(
-      bills.map(async (bill: Bill) => {
-        const items = await knex('billing').select('*');
-        // .where('bill_id', bill.id)
-        // .join('medicines', 'billing.medicine_id', 'medicines.id');
-
-        return {
-          ...bill,
-          items,
-        };
-      }),
-    );
-
-    // dbService.close();
-    return billsWithItems;
+      .orderBy('created_at', 'desc')
+      .groupBy('bill_no')
+      .join('medicines', 'billing.medicines_id', 'medicines.id');
+    return bills;
   } catch (error) {
     console.error('Error getting bills:', error);
     throw error;
@@ -51,18 +37,16 @@ export const getRecentBills = async (): Promise<Bill[]> => {
   const recentBills = await knex('billing')
     .select('*')
     .orderBy('created_at', 'desc')
+    .groupBy('bill_no')
     .limit(5);
-  // dbService.close();
   return recentBills;
 };
 
 export const getBill = async (id: number): Promise<Bill> => {
   const knex = await dbService.getKnexConnection();
   try {
-    const bill = await knex('billing')
-      .where({ id })
-      .first();
-      console.log({bill})
+    const bill = await knex('billing').where({ id }).first().groupBy('bill_no');
+    console.log({ bill });
     return bill || null;
   } catch (error) {
     console.error('Error getting bill:', error);

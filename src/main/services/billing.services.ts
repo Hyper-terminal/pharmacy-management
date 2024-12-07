@@ -41,7 +41,7 @@ ipcMain.handle('add-bill', async (_event, billData) => {
   try {
     // check if all the medicines are in stock or not
     const outOfstock: string[][] = [];
-    billData.items.forEach((element) => {
+    billData.items.forEach((element: any) => {
       const exisitingMedicine: any = dbService
         .getConnection()
         .prepare(`SELECT total_qty,name FROM medicines WHERE id = ?`)
@@ -69,8 +69,8 @@ ipcMain.handle('add-bill', async (_event, billData) => {
       };
 
     const insert = dbService.getConnection().prepare(`INSERT INTO
-      billing (name, medicines_id, batch_id,discount,tax,quantity_sold,price,final_price, customer_name, doctor_name, customer_phone, doctor_phone)
-      VALUES (?, ?, ?,?, ?, ?,?, ?, ?, ?, ?, ?)`);
+      billing (name, medicines_id, batch_id,discount,tax,quantity_sold,price,final_price, customer_name, doctor_name, customer_phone, doctor_phone, bill_no)
+      VALUES (?, ?, ?,?, ?, ?,?, ?, ?, ?, ?, ?, ?)`);
     // SET total_qty = CASE
     //                     WHEN total_qty - ? < 0 THEN 0
     //                     ELSE total_qty - ?
@@ -80,6 +80,17 @@ ipcMain.handle('add-bill', async (_event, billData) => {
         UPDATE medicines
         set total_qty=total_qty-?
 WHERE batch_id = ?;`);
+
+    const latestBillNo = await dbService
+      .getKnexConnection()
+      .select('bill_no')
+      .from('billing')
+      .orderBy('created_at', 'desc')
+      .limit(1);
+
+    const newBillNo = latestBillNo?.[0]?.bill_no
+      ? Number(latestBillNo?.[0]?.bill_no) + 1
+      : 1;
 
     const { customer_name, doctor_name, customer_phone, doctor_phone } =
       billData.customer;
@@ -109,6 +120,7 @@ WHERE batch_id = ?;`);
         doctor_name,
         customer_phone,
         doctor_phone,
+        newBillNo,
       );
       updateProdqty.run(Qty, batch_id);
     }

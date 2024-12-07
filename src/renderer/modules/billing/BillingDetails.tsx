@@ -11,7 +11,13 @@ import {
   TableRow,
 } from '@/src/renderer/components/ui/Table';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeftIcon, CalendarIcon, Eye, ReceiptIcon, Search } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  CalendarIcon,
+  Eye,
+  ReceiptIcon,
+  Search,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -48,7 +54,7 @@ export default function BillingDetails() {
   const filteredBills = bills?.filter(
     (bill) =>
       bill.customer_name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
-      bill.id?.toString()?.toLowerCase().includes(searchTerm?.toLowerCase())
+      bill.id?.toString()?.toLowerCase().includes(searchTerm?.toLowerCase()),
   );
 
   useEffect(() => {
@@ -57,10 +63,12 @@ export default function BillingDetails() {
 
     // If ID exists, fetch specific bill and switch to details view
     if (id) {
-      window.electron.ipcRenderer.invoke('get-bill', Number(id)).then((bill) => {
-        setCurrentBill(bill);
-        setView('details');
-      });
+      window.electron.ipcRenderer
+        .invoke('get-bill', Number(id))
+        .then((bill) => {
+          setCurrentBill(bill);
+          setView('details');
+        });
     }
   }, [id]);
 
@@ -73,7 +81,9 @@ export default function BillingDetails() {
           exit={{ opacity: 0, y: -20 }}
           className="flex items-center justify-center h-64"
         >
-          <p className="text-lg text-muted-foreground">Please select a bill to view details</p>
+          <p className="text-lg text-muted-foreground">
+            Please select a bill to view details
+          </p>
         </motion.div>
       );
     }
@@ -87,7 +97,9 @@ export default function BillingDetails() {
       >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-2xl font-bold">Bill #{currentBill.id}</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              Bill #{currentBill.id}
+            </CardTitle>
             <Badge variant="outline" className="text-sm">
               <CalendarIcon className="w-3 h-3 mr-1" />
               {new Date(currentBill.created_at).toLocaleDateString()}
@@ -98,10 +110,22 @@ export default function BillingDetails() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Customer Information</h3>
               <div className="space-y-2">
-                <p><span className="text-muted-foreground">Name:</span> {currentBill.customer_name}</p>
-                <p><span className="text-muted-foreground">Phone:</span> {currentBill.customer_phone}</p>
-                <p><span className="text-muted-foreground">Doctor:</span> {currentBill.doctor_name}</p>
-                <p><span className="text-muted-foreground">Doctor Phone:</span> {currentBill.doctor_phone}</p>
+                <p>
+                  <span className="text-muted-foreground">Name:</span>{' '}
+                  {currentBill.customer_name}
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Phone:</span>{' '}
+                  {currentBill.customer_phone}
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Doctor:</span>{' '}
+                  {currentBill.doctor_name}
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Doctor Phone:</span>{' '}
+                  {currentBill.doctor_phone}
+                </p>
               </div>
             </div>
             {/* Bill Summary */}
@@ -121,13 +145,17 @@ export default function BillingDetails() {
                       Qty: {currentBill.quantity_sold} × ₹{currentBill.price}
                     </p>
                   </div>
-                  <p className="font-semibold">₹{Number(currentBill.final_price).toFixed(2)}</p>
+                  <p className="font-semibold">
+                    ₹{Number(currentBill.final_price).toFixed(2)}
+                  </p>
                 </motion.div>
 
                 <div className="pt-4 mt-4 border-t">
                   <div className="flex justify-between text-lg font-semibold">
                     <span>Total Amount</span>
-                    <span className="text-primary">₹{Number(currentBill.final_price).toFixed(2)}</span>
+                    <span className="text-primary">
+                      ₹{Number(currentBill.final_price).toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -150,7 +178,8 @@ export default function BillingDetails() {
         No bills found!
       </h2>
       <p className="text-sm text-muted-foreground">
-        Looks like there are no bills yet. Start adding new bills to see them here.
+        Looks like there are no bills yet. Start adding new bills to see them
+        here.
       </p>
     </motion.div>
   );
@@ -241,17 +270,22 @@ export default function BillingDetails() {
                       <TableBody>
                         {filteredBills?.map((bill) => (
                           <TableRow key={bill.id}>
-                            <TableCell className="font-medium">{bill.id}</TableCell>
+                            <TableCell className="font-medium">
+                              {bill.id}
+                            </TableCell>
                             <TableCell>
                               {new Date(bill.created_at).toLocaleDateString()}
                             </TableCell>
                             <TableCell>{bill.customer_name}</TableCell>
-                            <TableCell>₹{bill.final_price?.toFixed(2)}</TableCell>
+                            <TableCell>
+                              ₹{bill.final_price?.toFixed(2)}
+                            </TableCell>
                             <TableCell>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
+                                  console.log(bill);
                                   setCurrentBill(bill);
                                   setView('details');
                                 }}

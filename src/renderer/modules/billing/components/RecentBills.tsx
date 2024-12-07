@@ -23,7 +23,7 @@ export default function RecentBills() {
       try {
         const recentBills =
           await window.electron.ipcRenderer.invoke('get-recent-bills');
-        setBills(recentBills as Bill[] || []);
+        setBills((recentBills as Bill[]) || []);
       } catch (error) {
         console.error('Error fetching recent bills:', error);
       } finally {
@@ -33,9 +33,16 @@ export default function RecentBills() {
 
     fetchRecentBills();
 
-    window.electron.ipcRenderer.on('emit-recent-bills', (...args: unknown[]) => {
-      setBills(args[0] as Bill[] || []);
-    });
+    try {
+      window.electron.ipcRenderer.on(
+        'emit-recent-bills',
+        (...args: unknown[]) => {
+          setBills((args[0] as Bill[]) || []);
+        },
+      );
+    } catch (error) {
+      console.error('Error fetching recent bills:', error);
+    }
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('emit-recent-bills');
@@ -149,7 +156,7 @@ export default function RecentBills() {
                     {bill.items} items
                   </Badge>
                   <span className="font-medium text-gray-900 dark:text-gray-100">
-                  ₹{bill.total?.toFixed(2)}
+                    ₹{bill.total?.toFixed(2)}
                   </span>
                 </div>
               </motion.div>
