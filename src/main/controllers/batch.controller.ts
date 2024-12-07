@@ -11,6 +11,9 @@ export const getBatches = async (
     .select('*')
     .from('batches')
     .join('medicines', 'batches.id', 'medicines.batch_id')
+    .orderBy('batches.expiring_on')
+    // .orderByRaw("STR_TO_DATE(expiring_on, '%d/%m/%y') ASC")
+    // .orderByRaw("TO_DATE(expiring_on, 'DD/MM/YY') ASC")
     .offset(offset)
     .limit(limit);
   // console.log('this is limit batches ', batches);

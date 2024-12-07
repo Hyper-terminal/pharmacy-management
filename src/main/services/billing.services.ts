@@ -1,5 +1,9 @@
 import { ipcMain } from 'electron';
-import { getBill, getBills, getRecentBills } from '../controllers/bill.controller';
+import {
+  getBill,
+  getBills,
+  getRecentBills,
+} from '../controllers/bill.controller';
 import dbService from '../database';
 
 ipcMain.handle('search-medicines', async (_event, searchString) => {
@@ -35,6 +39,35 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
 
 ipcMain.handle('add-bill', async (_event, billData) => {
   try {
+    // check if all the medicines are in stock or not
+    const outOfstock: string[][] = [];
+    billData.items.forEach((element) => {
+      const exisitingMedicine: any = dbService
+        .getConnection()
+        .prepare(`SELECT total_qty,name FROM medicines WHERE id = ?`)
+        .get(element['Medicine ID']);
+
+      // console.log(
+      //   'meds qty ',
+      //   exisitingMedicine.total_qty,
+      //   typeof exisitingMedicine.total_qty,
+      // );
+      if (
+        exisitingMedicine.total_qty <= 0 ||
+        element.Qty > exisitingMedicine.total_qty
+      )
+        outOfstock.push(exisitingMedicine.name);
+      // if (Number(exisitingMedicine?.total_qty || 0) < Number(element.Qty))
+    });
+
+    if (outOfstock.length > 0)
+      return {
+        success: false,
+        message:
+          'Quantity of few medicines are less than required in bill ' +
+          outOfstock.join(','),
+      };
+
     const insert = dbService.getConnection().prepare(`INSERT INTO
       billing (name, medicines_id, batch_id,discount,tax,quantity_sold,price,final_price, customer_name, doctor_name, customer_phone, doctor_phone)
       VALUES (?, ?, ?,?, ?, ?,?, ?, ?, ?, ?, ?)`);
@@ -62,19 +95,6 @@ WHERE batch_id = ?;`);
         Price,
         'Final Price': final_price,
       } = medi;
-
-      // check if the quantity is less than the total quantity
-      const exisitingMedicine: any = dbService
-        .getConnection()
-        .prepare(`SELECT total_qty FROM medicines WHERE id = ?`)
-        .get(medicine_id);
-
-      if (Number(exisitingMedicine?.total_qty || 0) < Number(Qty)) {
-        return {
-          success: false,
-          message: 'Quantity is less than the total quantity',
-        };
-      }
 
       insert.run(
         Name,

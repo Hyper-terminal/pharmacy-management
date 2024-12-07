@@ -5,6 +5,7 @@ interface ICsvData {
   medicineProps: MedicineProps;
   batchProps: BatchProps;
 }
+
 function convert2qty(qty: number, pack: string | undefined) {
   // console.log(pack, typeof pack);
   const units = ['ml', 'gm'];
@@ -18,6 +19,14 @@ function convert2qty(qty: number, pack: string | undefined) {
   if (number) return Number(number[0]) * qty;
   return 10 * qty;
 }
+
+function addProperdate(incoming_date: string) {
+  incoming_date = '01/' + incoming_date;
+  const date_list = incoming_date.split('/');
+  date_list[2] = '20' + date_list[2];
+  return date_list.reverse().join('-');
+}
+
 export async function insertCsvMedicine(
   data: ICsvData[],
   batchIdArray: number[],
@@ -59,6 +68,7 @@ export async function insertCsvBatch(
       item.batchProps.pack,
     ),
     expiry_date: item.batchProps.expiry_date,
+    expiring_on: addProperdate(item.batchProps.expiry_date),
     received_date: item.batchProps.received_date,
     batch_code: newBatchCode,
     received_batch_id: item.batchProps.batch_code,
