@@ -19,7 +19,6 @@ import { useEffect, useState } from 'react';
 import { FieldValues } from 'react-hook-form';
 import { toast } from 'sonner';
 
-
 interface AddMedicineDropdownProps {
   onSelect: (medicine: TransformedMedicineDropDownData) => void;
   field: FieldValues;
@@ -31,7 +30,9 @@ export default function AddMedicineDropdown({
 }: AddMedicineDropdownProps) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [medicines, setMedicines] = useState<TransformedMedicineDropDownData[]>([]);
+  const [medicines, setMedicines] = useState<TransformedMedicineDropDownData[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function AddMedicineDropdown({
             searchTerm,
           );
           const transformedData = transformMedicineDropDownData(result);
-          console.log(transformedData);
+
           setMedicines(transformedData);
         } catch (error) {
           toast.error('Failed to search medicine');
@@ -119,7 +120,8 @@ export default function AddMedicineDropdown({
                         Batch: {medicine.nearestExpiryBatch.batch_id}
                       </span>
                       <span className="px-1.5 py-0.5 rounded-md bg-accent">
-                        Price: ₹{Number(medicine.nearestExpiryBatch.mrp).toFixed(2)}
+                        Price: ₹
+                        {Number(medicine.nearestExpiryBatch.mrp).toFixed(2)}
                       </span>
                     </div>
                   </div>

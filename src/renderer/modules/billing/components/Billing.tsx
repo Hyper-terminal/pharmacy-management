@@ -2,6 +2,7 @@ import { Badge } from '@/src/renderer/components/ui/Badge';
 import { Button } from '@/src/renderer/components/ui/Button';
 import { Input } from '@/src/renderer/components/ui/Input';
 import TopBarLoader from '@/src/renderer/components/ui/TopBarLoader';
+import { useBillStore } from '@/src/renderer/store/bill.store';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   PrinterIcon,
@@ -25,7 +26,6 @@ import RecentBills from './RecentBills';
 export default function Billing() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [billItems, setBillItems] = useState<any[]>([]);
   const [customerDetails, setCustomerDetails] = useState({
     customer_name: '',
     customer_phone: '',
@@ -33,6 +33,9 @@ export default function Billing() {
     doctor_phone: '',
     doctor_registration: '',
   });
+
+  const billItems = useBillStore((state) => state.billItems);
+  const setBillItems = useBillStore((state) => state.setBillItems);
 
   const handleSearchProduct = (term: string) => {
     setSearchTerm(term);
@@ -53,15 +56,15 @@ export default function Billing() {
   const handlePrintBill = async () => {
     try {
       customerDetailsSchema.parse(customerDetails);
-    } catch (error) {
-      toast.error('Please fill in valid customer details');
+    } catch (error: any) {
+      toast.error(error?.message || 'Please fill in valid customer details');
       return;
     }
 
     try {
       setIsLoading(true);
       const billadd = await window.electron.ipcRenderer.invoke('add-bill', {
-        items: billItems.map((item) => mapBillingFormFields(item)),
+        items: billItems?.map((item) => mapBillingFormFields(item)),
         customer: customerDetails,
       });
       if (!billadd.success) {
@@ -79,10 +82,33 @@ export default function Billing() {
     }
   };
 
-  const getTotalItems = () =>
-    billItems.reduce((sum, item) => sum + Number(item.QTY), 0);
+  /**
+   * Updates the quantity of an item in the bill.
+   * @param {string} name - The name of the item to update.
+   * @param {number} qty - The new quantity of the item.
+   */
+  const handleUpdateQty = (name: string, qty: number) => {
+    setBillItems(
+      billItems?.map((item) => {
+        if (item.name === name) {
+          return { ...item, QTY: qty };
+        }
+        return item;
+      }),
+    );
+  };
 
-  console.log(billItems);
+  /**
+   * Calculates the total quantity of all items in the bill.
+   *
+   * @returns {number} The total quantity of items.
+   */
+  const getTotalItems = () => {
+    if (Array.isArray(billItems))
+      return billItems?.reduce((sum, item) => sum + Number(item.QTY), 0);
+
+    return 0;
+  };
 
   return (
     <motion.div
@@ -223,7 +249,7 @@ export default function Billing() {
                   className="pl-10 transition-all duration-300 border-gray-200 rounded-full hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
-              <AddItemForm setBillItems={setBillItems} />
+              <AddItemForm />
             </div>
 
             <motion.div className="space-y-4">
@@ -261,24 +287,14 @@ export default function Billing() {
                   </motion.div>
                 ) : (
                   <div className="space-y-2">
-                    {billItems.map((item, index) => (
+                    {billItems?.map((item, index) => (
                       <BillItem
                         key={item.id}
                         item={item}
                         index={index}
                         onRemove={handleRemoveItem}
                         onUpdateQuantity={(name: string, newQty: number) => {
-                          setBillItems((items) =>
-                            items.map((item) =>
-                              item?.NAME?.name === name
-                                ? {
-                                    ...item,
-                                    QTY: newQty,
-                                    total: newQty * Number(item.PRICE),
-                                  }
-                                : item,
-                            ),
-                          );
+                          handleUpdateQty(name, newQty);
                         }}
                       />
                     ))}
@@ -346,11 +362,7 @@ export default function Billing() {
   );
 }
 
-const AddItemForm = ({
-  setBillItems,
-}: {
-  setBillItems: (items: any[]) => void;
-}) => {
+const AddItemForm = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -366,7 +378,7 @@ const AddItemForm = ({
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] w-[60vw] overflow-y-auto backdrop-blur-xl">
-        <Addbilling setBillItems={setBillItems} />
+        <Addbilling />
       </DialogContent>
     </Dialog>
   );

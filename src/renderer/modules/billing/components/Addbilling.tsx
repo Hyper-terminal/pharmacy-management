@@ -27,8 +27,9 @@ import { getPerPriceMedicine } from '@/src/renderer/utils';
 import { cn } from '@/src/renderer/lib/utils';
 import { PlusIcon, CalendarIcon, Package2Icon } from 'lucide-react';
 import { Badge } from '@/src/renderer/components/ui/Badge';
+import { useBillStore } from '@/src/renderer/store/bill.store';
 
-export default function Addbilling({ setBillItems }: { setBillItems: any }) {
+export default function Addbilling() {
   const form = useForm({
     resolver: zodResolver(Billingschema),
     defaultValues: {
@@ -58,6 +59,9 @@ export default function Addbilling({ setBillItems }: { setBillItems: any }) {
     },
   });
 
+  const billItems = useBillStore((state) => state.billItems);
+  const setBillItems = useBillStore((state) => state.setBillItems);
+
   // Price calculation effect
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -81,7 +85,7 @@ export default function Addbilling({ setBillItems }: { setBillItems: any }) {
 
   async function onSubmit(values: any) {
     try {
-      setBillItems((prev: any[]) => [...prev, values]);
+      setBillItems([...billItems, values]);
       toast.success('Item added successfully!');
     } catch (error) {
       toast.error('Failed to add item');
@@ -383,7 +387,7 @@ export default function Addbilling({ setBillItems }: { setBillItems: any }) {
                             className="h-12 pl-8 text-lg font-medium border-input bg-gradient-to-r from-primary/5 to-purple-500/5"
                           />
                           <div className="absolute inset-y-0 flex items-center left-3 text-primary">
-                          ₹
+                            ₹
                           </div>
                         </div>
                       </motion.div>

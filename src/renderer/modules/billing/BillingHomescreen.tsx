@@ -10,6 +10,11 @@ export default function BillingHomescreen() {
     { id: nanoid(), isActive: true },
   ]);
 
+  /**
+   * Adds a new billing tab to the list.
+   * This function will set `isActive` to false on all existing tabs
+   * and create a new tab with `isActive` set to true.
+   */
   const addNewBillingTab = () => {
     setBillingTabs((prev) => [
       ...prev.map((tab) => ({ ...tab, isActive: false })),
@@ -17,6 +22,11 @@ export default function BillingHomescreen() {
     ]);
   };
 
+  /**
+   * Switches the active tab to the tab with the given id.
+   * This function will toggle the `isActive` property on all tabs.
+   * @param id The id of the tab to switch to
+   */
   const switchTab = (id: string) => {
     setBillingTabs((prev) =>
       prev.map((tab) => ({
@@ -26,6 +36,12 @@ export default function BillingHomescreen() {
     );
   };
 
+  /**
+   * Deletes a billing tab.
+   * If the tab being deleted is the active tab, this function will
+   * make the last tab active.
+   * @param id The id of the tab to delete
+   */
   const deleteTab = (id: string) => {
     setBillingTabs((prev) => {
       const filteredTabs = prev.filter((tab) => tab.id !== id);
