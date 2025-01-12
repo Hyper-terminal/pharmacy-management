@@ -41,7 +41,11 @@ interface BillItemProps {
     HSN: number;
   };
   onRemove: (id: string) => void;
-  onUpdateQuantity: (name: string, newQuantity: number) => void;
+  onUpdateQuantity: (
+    name: string,
+    newQuantity: number,
+    batchId: number,
+  ) => void;
   index: number;
 }
 
@@ -97,6 +101,7 @@ export function BillItem({
               onUpdateQuantity(
                 item?.NAME?.name,
                 Math.max(1, Number(item.QTY) - 1),
+                item?.['BATCH ID'],
               )
             }
             className="p-0 h-7 w-7 hover:bg-primary/10"
@@ -110,7 +115,11 @@ export function BillItem({
             variant="ghost"
             size="sm"
             onClick={() =>
-              onUpdateQuantity(item?.NAME?.name, Number(item.QTY) + 1)
+              onUpdateQuantity(
+                item?.NAME?.name,
+                Number(item.QTY) + 1,
+                item?.['BATCH ID'],
+              )
             }
             className="p-0 h-7 w-7 hover:bg-primary/10"
           >

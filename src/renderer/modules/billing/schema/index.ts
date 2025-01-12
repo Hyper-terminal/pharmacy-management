@@ -4,7 +4,7 @@ export const Billingschema = z.object({
   NAME: z.object({
     id: z.number(),
     name: z.string(),
-    total_qty: z.union([z.string(), z.number()]),
+    total_qty: z.array(z.union([z.string(), z.number()])),
     batchData: z.array(
       z.object({
         mrp: z.string(),

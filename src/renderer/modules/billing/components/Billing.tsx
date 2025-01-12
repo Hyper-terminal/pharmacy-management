@@ -57,7 +57,15 @@ export default function Billing() {
     try {
       customerDetailsSchema.parse(customerDetails);
     } catch (error: any) {
-      toast.error(error?.message || 'Please fill in valid customer details');
+      if (error.errors) {
+        const formattedErrors = error.errors.map((err: any) => {
+          const field = err.path.join('.');
+          return `${field}: ${err.message}`;
+        });
+        toast.error(formattedErrors.join('\n'));
+      } else {
+        toast.error('Please fill in valid customer details');
+      }
       return;
     }
 
@@ -86,11 +94,12 @@ export default function Billing() {
    * Updates the quantity of an item in the bill.
    * @param {string} name - The name of the item to update.
    * @param {number} qty - The new quantity of the item.
+   * @param {number} batchId - The batch ID of the item.
    */
-  const handleUpdateQty = (name: string, qty: number) => {
+  const handleUpdateQty = (name: string, qty: number, batchId: number) => {
     setBillItems(
       billItems?.map((item) => {
-        if (item.name === name) {
+        if (item.NAME.name === name && item['BATCH ID'] === batchId) {
           return { ...item, QTY: qty };
         }
         return item;
@@ -293,8 +302,12 @@ export default function Billing() {
                         item={item}
                         index={index}
                         onRemove={handleRemoveItem}
-                        onUpdateQuantity={(name: string, newQty: number) => {
-                          handleUpdateQty(name, newQty);
+                        onUpdateQuantity={(
+                          name: string,
+                          newQty: number,
+                          batchId: number,
+                        ) => {
+                          handleUpdateQty(name, newQty, batchId);
                         }}
                       />
                     ))}

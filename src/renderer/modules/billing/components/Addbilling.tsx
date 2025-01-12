@@ -85,6 +85,17 @@ export default function Addbilling() {
 
   async function onSubmit(values: any) {
     try {
+      // find values.NAME.id and values.BATCH ID in billItems
+      const existingItem = billItems.find(
+        (item: any) =>
+          item.NAME.id === values.NAME.id && item.BATCH_ID === values.BATCH_ID,
+      );
+
+      if (existingItem) {
+        toast.error('Item already exists in the bill');
+        return;
+      }
+
       setBillItems([...billItems, values]);
       toast.success('Item added successfully!');
     } catch (error) {
@@ -153,14 +164,22 @@ export default function Addbilling() {
                       <FormControl>
                         <AddMedicineDropdown
                           onSelect={(medicine) => {
+                            const { nearestExpiryBatch, batchData } = medicine;
+                            const selectedBatchIndex = batchData.findIndex(
+                              (batch: any) =>
+                                batch.batch_id === nearestExpiryBatch.batch_id,
+                            );
                             form.setValue('MEDICINE ID', medicine.id);
                             form.setValue(
                               'BATCH ID',
-                              Number(medicine.nearestExpiryBatch.batch_id),
+                              Number(nearestExpiryBatch.batch_id),
                             );
                             form.setValue(
                               'PRICE',
-                              Number(medicine.nearestExpiryBatch.mrp),
+                              getPerPriceMedicine(
+                                String(medicine.total_qty[selectedBatchIndex]),
+                                String(nearestExpiryBatch.mrp),
+                              ),
                             );
                           }}
                           field={field}
@@ -185,17 +204,22 @@ export default function Addbilling() {
                         onValueChange={(value) => {
                           if (!value) return;
                           field.onChange(value);
-                          const medicineData = form.getValues('NAME');
-                          const selectedBatch: any =
-                            medicineData?.batchData?.find(
+                          const medicineData: any = form.getValues('NAME');
+                          const selectedBatchIndex: number =
+                            medicineData?.batchData?.findIndex(
                               (batch: any) => batch.batch_id === value,
                             );
-                          if (selectedBatch) {
+                          if (selectedBatchIndex !== -1) {
                             form.setValue(
                               'PRICE',
                               getPerPriceMedicine(
-                                String(medicineData.total_qty),
-                                String(selectedBatch.amount),
+                                String(
+                                  medicineData.total_qty[selectedBatchIndex],
+                                ),
+                                String(
+                                  medicineData.batchData[selectedBatchIndex]
+                                    .mrp,
+                                ),
                               ),
                             );
                           }

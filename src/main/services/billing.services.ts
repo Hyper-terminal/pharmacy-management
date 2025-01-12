@@ -30,6 +30,10 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
     // Execute the query with the search term, using wildcards for partial matching
     const results = stmt.all(`%${searchString}%`);
 
+    results.forEach((result: any) => {
+      result.total_qty = result.total_qty.split(',');
+    });
+
     return results;
   } catch (error) {
     console.log('error in getting mediines search ', error);
