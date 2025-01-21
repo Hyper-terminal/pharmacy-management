@@ -1,9 +1,19 @@
-import { Input } from "@/src/renderer/components/ui/Input";
-import { useState } from "react";
-import { Edit, Save, XCircle, Building2, Phone, Clock, UserCog, Receipt, Info } from 'lucide-react';
-import { cn } from "@/src/renderer/lib/utils";
-import { Button } from "@/src/renderer/components/ui/Button";
-import { motion, AnimatePresence } from "framer-motion";
+import { Input } from '@/src/renderer/components/ui/Input';
+import { useEffect, useState } from 'react';
+import {
+  Edit,
+  Save,
+  XCircle,
+  Building2,
+  Phone,
+  Clock,
+  UserCog,
+  Receipt,
+  Info,
+} from 'lucide-react';
+import { cn } from '@/src/renderer/lib/utils';
+import { Button } from '@/src/renderer/components/ui/Button';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type FormDataType = {
   [key: string]: string;
@@ -18,70 +28,139 @@ type FieldGroupsType = {
 
 export default function Setting() {
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("Basic Information");
+  const [activeTab, setActiveTab] = useState('Basic Information');
   const [formData, setFormData] = useState<FormDataType>({
-    pharmacyName: "Metro Pharmacy",
-    licenseNumber: "DL-12345-67890",
-    gstNumber: "29ABCDE1234F1Z5",
-    registrationNumber: "REG-98765-43210",
-    establishedYear: "2010",
-    email: "contact@metropharmacy.com",
-    mobile: "+1 (555) 123-4567",
-    landline: "+1 (555) 987-6543",
-    website: "www.metropharmacy.com",
-    address: "123 Healthcare Street, Medical District\nNew York, NY 10001",
-    weekdayHours: "9:00 AM - 9:00 PM",
-    weekendHours: "10:00 AM - 6:00 PM",
-    holidayHours: "10:00 AM - 2:00 PM",
-    ownerName: "John Smith",
-    pharmacistName: "Dr. Sarah Johnson",
-    pharmacistLicense: "PH-789-012345",
-    panNumber: "ABCDE1234F",
-    bankName: "National City Bank",
-    accountNumber: "1234567890",
-    ifscCode: "NCB0001234",
-    emergencyContact: "+1 (555) 000-9999",
-    insurancePolicy: "INS-567890",
-    lastInspectionDate: "2024-01-15",
-    nextInspectionDue: "2025-01-15"
+    pharmacyName: 'Metro Pharmacy',
+    licenseNumber: 'DL-12345-67890',
+    gstNumber: '29ABCDE1234F1Z5',
+    registrationNumber: 'REG-98765-43210',
+    establishedYear: '2010',
+    email: 'contact@metropharmacy.com',
+    mobile: '+1 (555) 123-4567',
+    landline: '+1 (555) 987-6543',
+    website: 'www.metropharmacy.com',
+    address: '123 Healthcare Street, Medical District\nNew York, NY 10001',
+    weekdayHours: '9:00 AM - 9:00 PM',
+    weekendHours: '10:00 AM - 6:00 PM',
+    holidayHours: '10:00 AM - 2:00 PM',
+    ownerName: 'John Smith',
+    pharmacistName: 'Dr. Sarah Johnson',
+    pharmacistLicense: 'PH-789-012345',
+    panNumber: 'ABCDE1234F',
+    bankName: 'National City Bank',
+    accountNumber: '1234567890',
+    ifscCode: 'NCB0001234',
+    emergencyContact: '+1 (555) 000-9999',
+    insurancePolicy: 'INS-567890',
+    lastInspectionDate: '2024-01-15',
+    nextInspectionDue: '2025-01-15',
   });
 
   const fieldGroups: FieldGroupsType = {
-    "Basic Information": {
+    'Basic Information': {
       icon: Building2,
-      fields: ["pharmacyName", "licenseNumber", "gstNumber", "registrationNumber", "establishedYear"],
+      fields: [
+        'pharmacyName',
+        'licenseNumber',
+        'gstNumber',
+        'registrationNumber',
+        'establishedYear',
+      ],
     },
-    "Contact Information": {
+    'Contact Information': {
       icon: Phone,
-      fields: ["email", "mobile", "landline", "website", "address"],
+      fields: ['email', 'mobile', 'landline', 'website', 'address'],
     },
-    "Operating Hours": {
+    'Operating Hours': {
       icon: Clock,
-      fields: ["weekdayHours", "weekendHours", "holidayHours"],
+      fields: ['weekdayHours', 'weekendHours', 'holidayHours'],
     },
-    "Business Details": {
+    'Business Details': {
       icon: UserCog,
-      fields: ["ownerName", "pharmacistName", "pharmacistLicense"],
+      fields: ['ownerName', 'pharmacistName', 'pharmacistLicense'],
     },
-    "Tax & Financial": {
+    'Tax & Financial': {
       icon: Receipt,
-      fields: ["panNumber", "bankName", "accountNumber", "ifscCode"],
+      fields: ['panNumber', 'bankName', 'accountNumber', 'ifscCode'],
     },
-    "Additional Information": {
+    'Additional Information': {
       icon: Info,
-      fields: ["emergencyContact", "insurancePolicy", "lastInspectionDate", "nextInspectionDue"],
+      fields: [
+        'emergencyContact',
+        'insurancePolicy',
+        'lastInspectionDate',
+        'nextInspectionDue',
+      ],
     },
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { id, value } = e.target;
+    alert('in handle change ' + id + value);
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const formatFieldLabel = (key: string): string => {
-    return String(key).replace(/([A-Z])/g, ' $1').replace(/^./, (str: string) => str.toUpperCase());
+    return String(key)
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str: string) => str.toUpperCase());
   };
+  const handleProfileupdate = async () => {
+    try {
+      const updateProfile = await window.electron.ipcRenderer.invoke(
+        'update-profile',
+        formData,
+      );
 
+      if (updateProfile) {
+        alert('profile data updated successfully');
+      } else {
+        alert('profile data update failed');
+      }
+    } catch (error) {
+      alert('profile data update failed');
+    }
+  };
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const profileData =
+          await window.electron.ipcRenderer.invoke('get-profile');
+        console.log(profileData);
+        setFormData({
+          pharmacyName: profileData.pharmacyName,
+          licenseNumber: profileData.LicenseNumber,
+          gstNumber: profileData.GstNumber,
+          registrationNumber: profileData.RegistrationNumber,
+          establishedYear: String(profileData.EstablishedYear),
+          email: profileData.email,
+          mobile: profileData.mobile,
+          landline: '', // Landline might not exist in the API response, leave it empty
+          website: profileData.website,
+          address: profileData.address,
+          weekdayHours: profileData.timings, // Mapping timings to weekdayHours (or you can split it into weekday/weekend)
+          weekendHours: '', // Leave empty if no separate weekend hours in the API
+          holidayHours: '', // Leave empty if no separate holiday hours in the API
+          ownerName: '', // If the API doesn't have an owner name, set it to empty
+          pharmacistName: profileData.PharmacistName,
+          pharmacistLicense: profileData.PharmacistLicense,
+          panNumber: profileData.PanNumber,
+          bankName: profileData.BankName,
+          accountNumber: profileData.AccountNumber,
+          ifscCode: profileData.IfscCode,
+          emergencyContact: '', // No emergency contact in API, leave empty
+          insurancePolicy: '', // No insurance policy in API, leave empty
+          lastInspectionDate: profileData.LastInspection, // Assuming it's in 'YYYY-MM-DD' format
+          nextInspectionDue: profileData.NextInspection, // Assuming it's in 'YYYY-MM-DD' format
+        });
+      } catch (error) {
+        alert('some error occured while fetcing your profile');
+      }
+    };
+    fetchProfileData();
+  }, []);
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -98,7 +177,7 @@ export default function Setting() {
             Settings
           </h2>
           <Button
-            variant={isEditing ? "destructive" : "default"}
+            variant={isEditing ? 'destructive' : 'default'}
             size="lg"
             onClick={() => setIsEditing(!isEditing)}
             className="px-8 transition-all duration-300 rounded-full"
@@ -125,10 +204,10 @@ export default function Setting() {
                 whileHover={{ x: 4 }}
                 onClick={() => setActiveTab(groupName)}
                 className={cn(
-                  "w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all",
+                  'w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all',
                   activeTab === groupName
-                    ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                    : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                    ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -137,14 +216,21 @@ export default function Setting() {
             ))}
           </motion.div>
 
-          <motion.div layout className="p-12 bg-white shadow-sm dark:bg-gray-900 rounded-3xl">
+          <motion.div
+            layout
+            className="p-12 bg-white shadow-sm dark:bg-gray-900 rounded-3xl"
+          >
             <AnimatePresence mode="wait">
               <div className="grid grid-cols-2 gap-x-12 gap-y-8">
                 {fieldGroups[activeTab].fields.map((key, index) => (
                   <motion.div
                     key={key}
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0, transition: { delay: index * 0.05 } }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      transition: { delay: index * 0.05 },
+                    }}
                     exit={{ opacity: 0, y: -20 }}
                     className="space-y-3"
                   >
@@ -152,7 +238,7 @@ export default function Setting() {
                       {formatFieldLabel(key?.toString())}
                     </label>
                     {isEditing ? (
-                      key === "address" ? (
+                      key === 'address' ? (
                         <textarea
                           id={key}
                           className="w-full min-h-[120px] rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-700"
@@ -163,7 +249,9 @@ export default function Setting() {
                       ) : (
                         <Input
                           id={key?.toString()}
-                          type={key?.toString()?.includes('Date') ? 'date' : 'text'}
+                          type={
+                            key?.toString()?.includes('Date') ? 'date' : 'text'
+                          }
                           className="w-full h-12 text-base rounded-xl"
                           placeholder={`Enter ${formatFieldLabel(key?.toString()).toLowerCase()}`}
                           value={formData[key]}
@@ -193,7 +281,10 @@ export default function Setting() {
               <Button
                 size="lg"
                 className="px-12 py-6 text-lg text-white bg-blue-500 rounded-full hover:bg-blue-600"
-                onClick={() => setIsEditing(false)}
+                onClick={() => {
+                  setIsEditing(false);
+                  handleProfileupdate();
+                }}
               >
                 <motion.span
                   className="flex items-center gap-2"

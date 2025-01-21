@@ -9,7 +9,9 @@ export type Channels =
   | 'get-recent-bills'
   | 'add-bill'
   | 'emit-recent-bills'
-  | 'get-bill';
+  | 'get-bill'
+  | 'get-profile'
+  | 'update-profile';
 
 const electronHandler = {
   ipcRenderer: {

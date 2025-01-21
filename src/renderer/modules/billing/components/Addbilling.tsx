@@ -88,18 +88,24 @@ export default function Addbilling() {
       // find values.NAME.id and values.BATCH ID in billItems
       const existingItem = billItems.find(
         (item: any) =>
-          item.NAME.id === values.NAME.id && item.BATCH_ID === values.BATCH_ID,
+          item.NAME.id === values.NAME.id &&
+          item['BATCH ID'] === values['BATCH ID'],
       );
 
       if (existingItem) {
-        toast.error('Item already exists in the bill');
+        toast.error(
+          'Item already exists in the bill ' +
+            JSON.stringify(values['BATCH ID']),
+        );
         return;
       }
 
       setBillItems([...billItems, values]);
-      toast.success('Item added successfully!');
+      toast.success(
+        'Item added successfully!' + JSON.stringify(values.NAME.id),
+      );
     } catch (error) {
-      toast.error('Failed to add item');
+      toast.error('Failed to add item ' + error);
     }
   }
 
@@ -210,6 +216,14 @@ export default function Addbilling() {
                               (batch: any) => batch.batch_id === value,
                             );
                           if (selectedBatchIndex !== -1) {
+                            // form.setValue('MEDICINE ID', medicine.id);
+                            form.setValue(
+                              'BATCH ID',
+                              Number(
+                                medicineData.batchData[selectedBatchIndex]
+                                  .batch_id,
+                              ),
+                            );
                             form.setValue(
                               'PRICE',
                               getPerPriceMedicine(
