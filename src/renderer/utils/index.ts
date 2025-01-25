@@ -1,4 +1,7 @@
-import { MedicineDropDownData, TransformedMedicineDropDownData } from '../types';
+import {
+  MedicineDropDownData,
+  TransformedMedicineDropDownData,
+} from '../types';
 
 export const mapCsvToInterfaces = (csvData: any) => {
   return {
@@ -51,34 +54,33 @@ export const transformMedicineDropDownData = (
       manufacturers,
       name,
       total_qty,
+      batch_codes,
     } = item;
 
     const batchIdsArray = batch_ids.split(',');
     const expiryDatesArray = expiry_dates.split(',');
     const manufacturersArray = manufacturers.split(',');
     const mrpsArray = mrps.split(',');
+    const batchCodesArray = batch_codes.split(',');
+    const batchData = expiryDatesArray.map((_, index: number) => {
+      return {
+        mrp: mrpsArray[index],
+        batch_id: batchIdsArray[index],
+        expiry_date: expiryDatesArray[index],
+        manufacturer: manufacturersArray[index],
+        batch_code: batchCodesArray[index],
+      };
+    });
 
-    const batchData = expiryDatesArray.map(
-      (_, index: number) => {
-        return {
-          mrp: mrpsArray[index],
-          batch_id: batchIdsArray[index],
-          expiry_date: expiryDatesArray[index],
-          manufacturer: manufacturersArray[index],
-        };
-      },
-    );
-
-    const nearestExpiryBatch = batchData.sort(
-      (a, b) => {
-        return Number(new Date(a.expiry_date)) - Number(new Date(b.expiry_date));
-      },
-    )[0];
+    const nearestExpiryBatch = batchData.sort((a, b) => {
+      return Number(new Date(a.expiry_date)) - Number(new Date(b.expiry_date));
+    })[0];
 
     return {
       id,
       name,
       total_qty,
+      batch_codes: batchCodesArray,
       batchData,
       nearestExpiryBatch,
     };

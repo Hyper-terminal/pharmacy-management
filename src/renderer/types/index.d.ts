@@ -6,8 +6,8 @@ export interface MedicineDropDownData {
   manufacturers: string;
   name: string;
   total_qty: string;
+  batch_codes: string;
 }
-
 
 export interface TransformedMedicineDropDownData {
   id: number;

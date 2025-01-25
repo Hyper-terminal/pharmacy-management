@@ -38,11 +38,13 @@ export default function Addbilling() {
         name: '',
         total_qty: '',
         batchData: [],
+        batch_codes: [],
         nearestExpiryBatch: {
           mrp: '0',
           batch_id: '',
           expiry_date: '',
           manufacturer: '',
+          batch_code: '',
         },
       },
       'MEDICINE ID': 0,
@@ -99,6 +101,7 @@ export default function Addbilling() {
         );
         return;
       }
+      console.log({ values });
 
       setBillItems([...billItems, values]);
       toast.success(

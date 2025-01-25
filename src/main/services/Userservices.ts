@@ -2,11 +2,11 @@ import { ipcMain } from 'electron';
 import dbService from '../database';
 
 export async function addDummyuser() {
-  const insert = dbService.getConnection().prepare(` 
-    INSERT INTO users (id, name, email, mobile, website, address, pharmacyName, LicenseNumber, GstNumber, RegistrationNumber, EstablishedYear, timings, PharmacistName, PharmacistLicense, PanNumber, BankName, AccountNumber, IfscCode, LastInspection, NextInspection) 
-    VALUES (1, 'John Doe', 'john.doe@example.com', '123-456-7890', 'https://johndoepharmacy.com', '123 Elm Street, Springfield', 
-    'John Pharmacy', 'PH123456', 'GSTIN123456789', 'REG12345', 2000, 
-    '9:00 AM - 6:00 PM', 'Dr. John Doe', 'PH-12345', 'ABCDE1234F', 'ABC Bank', '1234567890', 
+  const insert = dbService.getConnection().prepare(`
+    INSERT INTO users (id, name, email, mobile, website, address, pharmacyName, LicenseNumber, GstNumber, RegistrationNumber, EstablishedYear, timings, PharmacistName, PharmacistLicense, PanNumber, BankName, AccountNumber, IfscCode, LastInspection, NextInspection)
+    VALUES (1, 'John Doe', 'john.doe@example.com', '123-456-7890', 'https://johndoepharmacy.com', '123 Elm Street, Springfield',
+    'John Pharmacy', 'PH123456', 'GSTIN123456789', 'REG12345', 2000,
+    '9:00 AM - 6:00 PM', 'Dr. John Doe', 'PH-12345', 'ABCDE1234F', 'ABC Bank', '1234567890',
     'ABC1234567', '2024-12-01', '2025-12-01');
   `);
 
@@ -61,7 +61,7 @@ ipcMain.handle('update-profile', async (_event, profileData) => {
       NextInspection: profileData.nextInspectionDue, // Assuming 'YYYY-MM-DD' format
     };
 
-    const resp = await knex('users').insert(mappedData);
+    const resp = await knex('users').where('id', 1).update(mappedData);
 
     // update.run('newemail@example.com', '456 Oak Street, Springfield', 1);
     console.log(resp);

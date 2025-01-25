@@ -45,7 +45,7 @@ export default function AddMedicineDropdown({
             searchTerm,
           );
           const transformedData = transformMedicineDropDownData(result);
-
+          console.log({ transformedData, result });
           setMedicines(transformedData);
         } catch (error) {
           toast.error('Failed to search medicine');

@@ -98,7 +98,6 @@ export default function Setting() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { id, value } = e.target;
-    alert('in handle change ' + id + value);
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
@@ -109,16 +108,8 @@ export default function Setting() {
   };
   const handleProfileupdate = async () => {
     try {
-      const updateProfile = await window.electron.ipcRenderer.invoke(
-        'update-profile',
-        formData,
-      );
-
-      if (updateProfile) {
-        alert('profile data updated successfully');
-      } else {
-        alert('profile data update failed');
-      }
+      console.log({ formData });
+      await window.electron.ipcRenderer.invoke('update-profile', formData);
     } catch (error) {
       alert('profile data update failed');
     }

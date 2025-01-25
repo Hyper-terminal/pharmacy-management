@@ -27,6 +27,7 @@ interface BillItemProps {
       total_qty: string;
       batchData: BatchData[];
       nearestExpiryBatch: NearestExpiryBatch;
+      batch_codes: string[];
     };
     'MEDICINE ID': number;
     'BATCH ID': number;
@@ -40,7 +41,7 @@ interface BillItemProps {
     'CUSTOMER PHONE': string;
     HSN: number;
   };
-  onRemove: (id: string) => void;
+  onRemove: (item: any) => void;
   onUpdateQuantity: (
     name: string,
     newQuantity: number,
@@ -55,6 +56,20 @@ export function BillItem({
   onUpdateQuantity,
   index,
 }: BillItemProps) {
+  const indexOfBatch = item?.NAME?.batchData.findIndex(
+    (batch) => batch.batch_id === item?.['BATCH ID']?.toString(),
+  );
+
+  const getFinalPrice = () => {
+    const { PRICE, DISCOUNT, QTY } = item;
+    const subtotal = Number(PRICE) * Number(QTY);
+    const discountAmount = (subtotal * Number(DISCOUNT)) / 100;
+    const afterDiscount = subtotal - discountAmount;
+    return Number(afterDiscount.toFixed(2));
+  };
+
+  console.log({ item });
+  console.log({ indexOfBatch });
   return (
     <motion.div
       layout
@@ -85,7 +100,7 @@ export function BillItem({
           </h4>
           <div className="flex items-center gap-3 mt-1">
             <Badge variant="secondary" className="px-2 py-0.5 text-xs">
-              SKU: {item.id}
+              Batch: {item?.NAME?.batch_codes[indexOfBatch]}
             </Badge>
             <span className="text-sm text-green-600 dark:text-green-500">
               ₹{Number(item.PRICE)?.toFixed(2)} each
@@ -129,7 +144,7 @@ export function BillItem({
 
         <div className="text-right min-w-[100px]">
           <div className="text-lg font-semibold text-primary tabular-nums">
-            ₹{item['FINAL PRICE']?.toFixed(2)}
+            ₹{getFinalPrice()}
           </div>
           <div className="text-xs text-muted-foreground">Total</div>
         </div>
@@ -137,7 +152,7 @@ export function BillItem({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onRemove(item.id)}
+          onClick={() => onRemove(item)}
           className="w-8 h-8 p-0 ml-2 hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="w-4 h-4" />

@@ -42,15 +42,35 @@ export default function Billing() {
     // TODO: Implement product search functionality
   };
 
-  const handleRemoveItem = (id: string) => {
-    setBillItems(billItems.filter((item) => item.id !== id));
+  const handleRemoveItem = (item: any) => {
+    const {
+      'BATCH ID': batchId,
+      NAME: { id },
+    } = item;
+
+    setBillItems(
+      billItems.filter(
+        (item) => !(item['BATCH ID'] === batchId && item.NAME.id === id),
+      ),
+    );
   };
 
+  console.log({ billItems });
+
   const calculateTotal = () => {
-    return billItems.reduce(
-      (sum, item) => Number(sum) + Number(item['FINAL PRICE']),
-      0,
-    );
+    return billItems.reduce((total, item) => {
+      const subtotal = Number(item.QTY) * Number(item.PRICE);
+      const discountAmount = (subtotal * Number(item.DISCOUNT)) / 100;
+      const afterDiscount = subtotal - discountAmount;
+      return total + Number(afterDiscount.toFixed(2));
+    }, 0);
+  };
+
+  const calculateFinalPrice = (item: any) => {
+    const subtotal = Number(item.QTY) * Number(item.PRICE);
+    const discountAmount = (subtotal * Number(item.DISCOUNT)) / 100;
+    const afterDiscount = subtotal - discountAmount;
+    return Number(afterDiscount.toFixed(2));
   };
 
   const handlePrintBill = async () => {
@@ -71,8 +91,15 @@ export default function Billing() {
 
     try {
       setIsLoading(true);
+      console.log({ billItems });
+      // calculate total for each item here as well
+      // update FINAL PRICE in each item
+      const updatedBillItems = billItems?.map((item) => ({
+        ...item,
+        'FINAL PRICE': calculateFinalPrice(item),
+      }));
       const billadd = await window.electron.ipcRenderer.invoke('add-bill', {
-        items: billItems?.map((item) => mapBillingFormFields(item)),
+        items: updatedBillItems?.map((item) => mapBillingFormFields(item)),
         customer: customerDetails,
       });
       if (!billadd.success) {
@@ -325,7 +352,7 @@ export default function Billing() {
           >
             <h3 className="mb-4 text-xl font-semibold">Bill Summary</h3>
             <div className="flex flex-col gap-2">
-              <motion.div
+              {/* <motion.div
                 className="flex justify-between"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -342,7 +369,7 @@ export default function Billing() {
               >
                 <span>Tax (5%):</span>
                 <span>₹{(calculateTotal() * 0.05)?.toFixed(2)}</span>
-              </motion.div>
+              </motion.div> */}
               <motion.div
                 className="flex justify-between pt-2 mt-2 text-lg font-bold border-t"
                 initial={{ opacity: 0 }}
@@ -350,7 +377,7 @@ export default function Billing() {
                 transition={{ delay: 0.8 }}
               >
                 <span>Total:</span>
-                <span>₹{(calculateTotal() * 1.05)?.toFixed(2)}</span>
+                <span>₹{calculateTotal()?.toFixed(2)}</span>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
