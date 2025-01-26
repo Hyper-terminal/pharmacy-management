@@ -12,44 +12,59 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { singleProductSchema } from './schema';
+import { singleProductSchema, PackType, PackTypeDisplay } from './schema';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/src/renderer/components/ui/Select';
 
 export default function SingleProductAdd() {
   const [isLoadingGst, setIsLoadingGst] = useState(false);
   const form = useForm<z.infer<typeof singleProductSchema>>({
     resolver: zodResolver(singleProductSchema),
     defaultValues: {
-      supplier: '',
-      bill_number: '',
-      received_date: new Date().toISOString().split('T')[0],
-      manufacturer: '',
-      barcode: '',
-      pack: '',
-      batch_code: '',
-      expiry_date: '',
-      quantity: 0,
-      f_qty: 0,
-      half_qty: 0,
-      purchase_rate: 0,
-      sale_rate: 0,
-      mrp: 0,
-      discount: 0,
-      cgst: 0,
-      sgst: 0,
-      igst: 0,
-      additional_vat: 0,
-      amount: 0,
-      local_cent: 0,
-      scm1: 0,
-      scm2: 0,
-      scm_percentage: 0,
-      tcs_percentage: 0,
-      tcs_amount: 0,
-      po_number: '',
-      po_date: '',
-      hsn_code: '',
+      supplier: 'ABC Pharmaceuticals',
+      bill_number: 'BILL123',
+      received_date: new Date()
+        .toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit',
+        })
+        .replace(/\//g, '/'),
+      manufacturer: 'XYZ Labs',
+      medicine_name: 'Paracetamol',
+      barcode: '123456789',
+      pack: PackType.TABLET,
+      batch_code: 'BATCH001',
+      expiry_date: '01/12/24',
+      quantity: 100,
+      f_qty: 5,
+      half_qty: 2,
+      purchase_rate: 8.5,
+      sale_rate: 10.0,
+      mrp: 12.0,
+      discount: 5,
+      cgst: 9,
+      sgst: 9,
+      igst: 18,
+      additional_vat: 2,
+      amount: 850,
+      local_cent: 1,
+      scm1: 2,
+      scm2: 3,
+      scm_percentage: 5,
+      tcs_percentage: 1,
+      tcs_amount: 8.5,
+      po_number: 'PO123',
+      po_date: '01/01/24',
+      hsn_code: '30049099',
+      quantity_per_pack: 10,
     },
   });
 
@@ -85,17 +100,64 @@ export default function SingleProductAdd() {
     }
   }, [form.watch('hsn_code')]);
 
+  const formatDateInput = (value: string) => {
+    // Remove any non-digit characters
+    let cleaned = value.replace(/\D/g, '');
+
+    // Format as DD/MM/YY
+    if (cleaned.length >= 4) {
+      cleaned =
+        cleaned.slice(0, 2) +
+        '/' +
+        cleaned.slice(2, 4) +
+        '/' +
+        cleaned.slice(4, 6);
+    } else if (cleaned.length >= 2) {
+      cleaned = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
+    }
+
+    // Validate day (01-31)
+    const day = parseInt(cleaned.slice(0, 2));
+    if (day > 31) {
+      cleaned = '31' + cleaned.slice(2);
+    } else if (day < 1 && cleaned.length >= 2) {
+      cleaned = '01' + cleaned.slice(2);
+    }
+
+    // Validate month (01-12)
+    if (cleaned.length >= 5) {
+      const month = parseInt(cleaned.slice(3, 5));
+      if (month > 12) {
+        cleaned = cleaned.slice(0, 3) + '12' + cleaned.slice(5);
+      } else if (month < 1) {
+        cleaned = cleaned.slice(0, 3) + '01' + cleaned.slice(5);
+      }
+    }
+
+    return cleaned;
+  };
+
   async function onSubmit(values: z.infer<typeof singleProductSchema>) {
     try {
       console.log({ values });
-      // await window.electron.ipcRenderer.invoke('add-product', values);
-      toast.success('Product added successfully');
-      form.reset();
+      const result = await window.electron.ipcRenderer.invoke(
+        'add-single-product',
+        values,
+      );
+
+      if (result.success) {
+        toast.success('Product added successfully');
+        form.reset();
+      } else {
+        toast.error(`Failed to add product: ${result.error}`);
+      }
     } catch (error) {
       toast.error('Failed to add product');
       console.error(error);
     }
   }
+
+  console.log({ form });
 
   return (
     <Form {...form}>
@@ -109,6 +171,19 @@ export default function SingleProductAdd() {
                 <FormLabel>Supplier</FormLabel>
                 <FormControl>
                   <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="medicine_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Medicine Name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter medicine name" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -134,7 +209,17 @@ export default function SingleProductAdd() {
               <FormItem>
                 <FormLabel>Received Date</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="DD/MM/YY"
+                    maxLength={8}
+                    {...field}
+                    value={field.value || ''}
+                    onChange={(e) => {
+                      const formattedDate = formatDateInput(e.target.value);
+                      field.onChange(formattedDate);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -173,12 +258,23 @@ export default function SingleProductAdd() {
               <FormItem>
                 <FormLabel>Expiry Date</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="DD/MM/YY"
+                    maxLength={8}
+                    {...field}
+                    value={field.value || ''}
+                    onChange={(e) => {
+                      const formattedDate = formatDateInput(e.target.value);
+                      field.onChange(formattedDate);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="mrp"
@@ -303,6 +399,86 @@ export default function SingleProductAdd() {
                 <FormMessage />
               </FormItem>
             )}
+          />
+          <FormField
+            control={form.control}
+            name="pack"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pack Type</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select pack type">
+                        {field.value
+                          ? PackTypeDisplay[
+                              field.value as keyof typeof PackTypeDisplay
+                            ]
+                          : ''}
+                      </SelectValue>
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Object.entries(PackType).map(([_, value]) => (
+                      <SelectItem key={value} value={value}>
+                        {PackTypeDisplay[value as keyof typeof PackTypeDisplay]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="quantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantity</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="quantity_per_pack"
+            render={({ field }) => {
+              const packType = form.watch('pack');
+              const qtyPerPack = form.watch('quantity_per_pack') || 1;
+
+              const displayValue = `${qtyPerPack}${packType}`;
+
+              return (
+                <FormItem>
+                  <FormLabel>Quantity Per Pack</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                      <div className="absolute inset-y-0 flex items-center text-sm right-3 text-muted-foreground">
+                        {displayValue}
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         </div>
         <Button type="submit">Add Product</Button>

@@ -17,7 +17,7 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
                   GROUP_CONCAT(medicines.total_qty) as total_qty,
                   GROUP_CONCAT(batches.id) AS batch_ids,
                   GROUP_CONCAT(batches.manufacturer) AS manufacturers,
-                  GROUP_CONCAT(batches.mrp) AS mrps,
+                  GROUP_CONCAT(batches.amount) AS mrps,
                   GROUP_CONCAT(batches.expiry_date) AS expiry_dates
                   FROM medicines
                   INNER JOIN batches ON medicines.batch_id = batches.id
