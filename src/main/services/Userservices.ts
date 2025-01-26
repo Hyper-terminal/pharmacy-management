@@ -25,6 +25,10 @@ ipcMain.handle('get-profile', async () => {
     // return recentBills;
     // console.log(userDetails[0]);
 
+    if (userDetails.length === 0) {
+      await addDummyuser();
+      return null;
+    }
     return userDetails[0];
   } catch (error) {
     console.log('error getting profile data ', error);

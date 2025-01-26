@@ -119,7 +119,7 @@ export default function Setting() {
       try {
         const profileData =
           await window.electron.ipcRenderer.invoke('get-profile');
-        console.log(profileData);
+        if (!profileData) return;
         setFormData({
           pharmacyName: profileData.pharmacyName,
           licenseNumber: profileData.LicenseNumber,
