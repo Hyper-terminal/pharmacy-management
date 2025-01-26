@@ -4,7 +4,6 @@ import { Checkbox } from '@/src/renderer/components/ui/Checkbox';
 
 import { MedicineProps } from '@/src/main/types';
 import { DataTableColumnHeader } from './data-table-column-header';
-import { DataTableRowActions } from './data-table-row-actions';
 
 export const columns: ColumnDef<MedicineProps>[] = [
   {
@@ -76,27 +75,27 @@ export const columns: ColumnDef<MedicineProps>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex w-[200px] items-center">
+        <div className="flex items-center">
           <span>{row.getValue('total_qty')}</span>
         </div>
       );
     },
   },
-  {
-    accessorKey: 'batch_id',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Batch ID" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="w-[80px]">
-          <span>{row.getValue('batch_id')}</span>
-        </div>
-      );
-    },
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />,
-  },
+  // {
+  //   accessorKey: 'batch_code',
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Batch ID" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="w-[80px]">
+  //         <span>{row.getValue('batch_code')}</span>
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   id: 'actions',
+  //   cell: ({ row }) => <DataTableRowActions row={row} />,
+  // },
 ];

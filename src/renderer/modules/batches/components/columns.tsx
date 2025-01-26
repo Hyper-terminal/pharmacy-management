@@ -4,7 +4,6 @@ import { Checkbox } from '@/src/renderer/components/ui/Checkbox';
 
 import { BatchProps } from '@/src/main/types';
 import { DataTableColumnHeader } from './data-table-column-header';
-import { DataTableRowActions } from './data-table-row-actions';
 
 export const columns: ColumnDef<BatchProps>[] = [
   {
@@ -32,12 +31,12 @@ export const columns: ColumnDef<BatchProps>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'batch_id',
+    accessorKey: 'batch_code',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Batch Number" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue('batch_id')}</div>
+      <div className="w-[80px]">{row.getValue('batch_code')}</div>
     ),
     enableSorting: true,
   },
@@ -112,8 +111,8 @@ export const columns: ColumnDef<BatchProps>[] = [
       );
     },
   },
-  {
-    id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />,
-  },
+  // {
+  //   id: 'actions',
+  //   cell: ({ row }) => <DataTableRowActions row={row} />,
+  // },
 ];

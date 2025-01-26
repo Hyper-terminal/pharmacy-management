@@ -9,66 +9,93 @@ import {
 } from '@/src/renderer/components/ui/Form';
 import { Input } from '@/src/renderer/components/ui/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { singleProductSchema } from './schema';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function SingleProductAdd() {
+  const [isLoadingGst, setIsLoadingGst] = useState(false);
   const form = useForm<z.infer<typeof singleProductSchema>>({
     resolver: zodResolver(singleProductSchema),
     defaultValues: {
-      SUPPLIER: '',
-      'BILL NO.': '',
-      DATE: '',
-      COMPANY: '',
-      CODE: 0,
-      BARCODE: '',
-      'ITEM NAME': '',
-      PACK: '',
-      BATCH: '',
-      EXPIRY: '',
-      QTY: 0,
-      'F.QTY': 0,
-      HALFP: 0,
-      FTRATE: 0,
-      SRATE: 0,
-      MRP: 0,
-      DIS: 0,
-      VAT: 0,
-      ADNLVAT: 0,
-      AMOUNT: 0,
-      LOCALCENT: '',
-      SCM1: 0,
-      SCM2: 0,
-      SCMPER: 0,
-      HSNCODE: '',
-      CGST: 0,
-      SGST: 0,
-      IGST: 0,
-      PSRLNO: 0,
-      TCSPER: 0,
-      TCSAMT: 0,
-      ALTERCODE: '',
+      supplier: '',
+      bill_number: '',
+      received_date: new Date().toISOString().split('T')[0],
+      manufacturer: '',
+      barcode: '',
+      pack: '',
+      batch_code: '',
+      expiry_date: '',
+      quantity: 0,
+      f_qty: 0,
+      half_qty: 0,
+      purchase_rate: 0,
+      sale_rate: 0,
+      mrp: 0,
+      discount: 0,
+      cgst: 0,
+      sgst: 0,
+      igst: 0,
+      additional_vat: 0,
+      amount: 0,
+      local_cent: 0,
+      scm1: 0,
+      scm2: 0,
+      scm_percentage: 0,
+      tcs_percentage: 0,
+      tcs_amount: 0,
+      po_number: '',
+      po_date: '',
+      hsn_code: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof singleProductSchema>) {
-    // const { HSNCODE } = values;
-    // const hsnData = await ipcRenderer.invoke('get-hsn-data', HSNCODE);
-    console.log(values);
-  }
-
+  // Effect to fetch GST rates when HSN code changes
   useEffect(() => {
-    window.electron.ipcRenderer
-      .invoke('get-gst-data', '30029030')
-      .then((data) => {
-        console.log({ data });
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
-  }, []);
+    const hsnCode = form.watch('hsn_code');
+    if (hsnCode) {
+      setIsLoadingGst(true);
+      const fetchGstRates = async () => {
+        try {
+          const result = await window.electron.ipcRenderer.invoke(
+            'get-gst-data',
+            hsnCode,
+          );
+          if (result) {
+            form.setValue('cgst', Number(result.cgstRate?.split('%')[0]) || 0);
+            form.setValue('sgst', Number(result.sgstRate?.split('%')[0]) || 0);
+            form.setValue('igst', Number(result.igstRate?.split('%')[0]) || 0);
+          }
+        } catch (error) {
+          console.error('Error fetching GST rates:', error);
+        } finally {
+          setIsLoadingGst(false);
+        }
+      };
+
+      // Debounce the HSN code lookup
+      const timer = setTimeout(() => {
+        fetchGstRates();
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [form.watch('hsn_code')]);
+
+  async function onSubmit(values: z.infer<typeof singleProductSchema>) {
+    try {
+      console.log({ values });
+      // await window.electron.ipcRenderer.invoke('add-product', values);
+      toast.success('Product added successfully');
+      form.reset();
+    } catch (error) {
+      toast.error('Failed to add product');
+      console.error(error);
+    }
+  }
 
   return (
     <Form {...form}>
@@ -76,7 +103,7 @@ export default function SingleProductAdd() {
         <div className="grid grid-cols-3 gap-4">
           <FormField
             control={form.control}
-            name="SUPPLIER"
+            name="supplier"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Supplier</FormLabel>
@@ -89,7 +116,7 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="BILL NO."
+            name="bill_number"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Bill Number</FormLabel>
@@ -102,10 +129,10 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="DATE"
+            name="received_date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Date</FormLabel>
+                <FormLabel>Received Date</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -115,10 +142,10 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="COMPANY"
+            name="manufacturer"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Company</FormLabel>
+                <FormLabel>Manufacturer</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -128,10 +155,36 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="CODE"
+            name="batch_code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Code</FormLabel>
+                <FormLabel>Batch Code</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="expiry_date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Expiry Date</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="mrp"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>MRP</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -145,12 +198,16 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="BARCODE"
+            name="purchase_rate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Barcode</FormLabel>
+                <FormLabel>Purchase Rate</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -158,12 +215,16 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="ITEM NAME"
+            name="sale_rate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Item Name</FormLabel>
+                <FormLabel>Sale Rate</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -171,12 +232,19 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="PACK"
+            name="hsn_code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Pack</FormLabel>
+                <FormLabel>HSN Code</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <div className="relative">
+                    <Input {...field} placeholder="Enter HSN Code" />
+                    {isLoadingGst && (
+                      <div className="absolute -translate-y-1/2 right-3 top-1/2">
+                        <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -184,12 +252,17 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="BATCH"
+            name="cgst"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Batch</FormLabel>
+                <FormLabel>CGST (%)</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    readOnly
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -197,12 +270,35 @@ export default function SingleProductAdd() {
           />
           <FormField
             control={form.control}
-            name="EXPIRY"
+            name="sgst"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Expiry</FormLabel>
+                <FormLabel>SGST (%)</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    readOnly
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="igst"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>IGST (%)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    readOnly
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

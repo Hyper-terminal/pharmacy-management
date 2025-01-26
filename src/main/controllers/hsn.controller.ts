@@ -1,6 +1,16 @@
 import Fuse from 'fuse.js';
 import fs from 'fs';
 import csv from 'csv-parser';
+import path from 'path';
+import { app } from 'electron';
+
+const RESOURCES_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../../assets');
+
+const getAssetPath = (...paths: string[]): string => {
+  return path.join(RESOURCES_PATH, ...paths);
+};
 
 export const getHsnDescription = async (stringToSearch: string) => {
   return new Promise((resolve, reject) => {
@@ -8,7 +18,7 @@ export const getHsnDescription = async (stringToSearch: string) => {
     const gstData: any[] = [];
 
     // Read and parse CSV file
-    fs.createReadStream('src/main/utils/hsncode.csv')
+    fs.createReadStream(getAssetPath('hsncode.csv'))
       .pipe(csv())
       .on('data', (row: any) => {
         gstData.push(row);
@@ -59,7 +69,7 @@ export async function getGstData(stringToSearch: string) {
     const gstData: any[] = [];
 
     // Read and parse CSV file
-    fs.createReadStream('src/main/utils/gstData.csv')
+    fs.createReadStream(getAssetPath('gstData.csv'))
       .pipe(csv())
       .on('data', (row: any) => {
         gstData.push(row);
