@@ -1,32 +1,33 @@
-import { Button } from "@/src/renderer/components/ui/Button";
+import { Button } from '@/src/renderer/components/ui/Button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from "@/src/renderer/components/ui/Form";
-import { Input } from "@/src/renderer/components/ui/Input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+  FormMessage,
+} from '@/src/renderer/components/ui/Form';
+import { Input } from '@/src/renderer/components/ui/Input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { singleProductSchema } from './schema';
 
 export default function SingleProductAdd() {
   const form = useForm<z.infer<typeof singleProductSchema>>({
     resolver: zodResolver(singleProductSchema),
     defaultValues: {
-      SUPPLIER: "",
-      'BILL NO.': "",
-      DATE: "",
-      COMPANY: "",
+      SUPPLIER: '',
+      'BILL NO.': '',
+      DATE: '',
+      COMPANY: '',
       CODE: 0,
-      BARCODE: "",
-      'ITEM NAME': "",
-      PACK: "",
-      BATCH: "",
-      EXPIRY: "",
+      BARCODE: '',
+      'ITEM NAME': '',
+      PACK: '',
+      BATCH: '',
+      EXPIRY: '',
       QTY: 0,
       'F.QTY': 0,
       HALFP: 0,
@@ -37,24 +38,37 @@ export default function SingleProductAdd() {
       VAT: 0,
       ADNLVAT: 0,
       AMOUNT: 0,
-      LOCALCENT: "",
+      LOCALCENT: '',
       SCM1: 0,
       SCM2: 0,
       SCMPER: 0,
-      HSNCODE: "",
+      HSNCODE: '',
       CGST: 0,
       SGST: 0,
       IGST: 0,
       PSRLNO: 0,
       TCSPER: 0,
       TCSAMT: 0,
-      ALTERCODE: ""
+      ALTERCODE: '',
     },
-  })
+  });
 
-  function onSubmit(values: z.infer<typeof singleProductSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof singleProductSchema>) {
+    // const { HSNCODE } = values;
+    // const hsnData = await ipcRenderer.invoke('get-hsn-data', HSNCODE);
+    console.log(values);
   }
+
+  useEffect(() => {
+    window.electron.ipcRenderer
+      .invoke('get-gst-data', '30029030')
+      .then((data) => {
+        console.log({ data });
+      })
+      .catch((err) => {
+        console.log({ err });
+      });
+  }, []);
 
   return (
     <Form {...form}>
@@ -119,7 +133,11 @@ export default function SingleProductAdd() {
               <FormItem>
                 <FormLabel>Code</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -194,5 +212,5 @@ export default function SingleProductAdd() {
         <Button type="submit">Add Product</Button>
       </form>
     </Form>
-  )
+  );
 }

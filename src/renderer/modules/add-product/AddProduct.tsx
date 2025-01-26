@@ -4,10 +4,11 @@ import SingleProductAdd from '@/src/renderer/modules/add-product/SingleProduct';
 import { FileTextIcon } from 'lucide-react';
 import { useState } from 'react';
 import CsvAdd from './CsvAdd';
+import { PlusCircledIcon } from '@radix-ui/react-icons';
 
 export default function AddProduct() {
   const [isLoading, setIsLoading] = useState(false);
-  const [currentTab, setCurrentTab] = useState<'single' | 'csv'>('csv');
+  const [currentTab, setCurrentTab] = useState<'single' | 'csv'>('single');
 
   const handleTabChange = (tab: 'single' | 'csv') => {
     // setIsLoading((prev) => !prev);
@@ -21,13 +22,13 @@ export default function AddProduct() {
       <section className="flex flex-col gap-4 mt-10">
         <h2 className="text-2xl font-bold">Add Product</h2>
         <div className="flex items-center gap-4">
-          {/* <Button
+          <Button
             className="px-4 py-2"
             onClick={() => handleTabChange('single')}
           >
             <PlusCircledIcon className="w-5 h-5 mr-2" />
             Add Single Product
-          </Button> */}
+          </Button>
           <Button
             variant="secondary"
             className="px-4 py-2"

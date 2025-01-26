@@ -11,7 +11,8 @@ export type Channels =
   | 'emit-recent-bills'
   | 'get-bill'
   | 'get-profile'
-  | 'update-profile';
+  | 'update-profile'
+  | 'get-gst-data';
 
 const electronHandler = {
   ipcRenderer: {
