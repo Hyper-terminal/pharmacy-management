@@ -2,11 +2,10 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '@/src/renderer/components/ui/Checkbox';
 
-import { Product } from '../data/schema';
+import { MedicineProps } from '@/src/main/types';
 import { DataTableColumnHeader } from './data-table-column-header';
-import { DataTableRowActions } from './data-table-row-actions';
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<MedicineProps>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -32,110 +31,71 @@ export const columns: ColumnDef<Product>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'CODE',
+    accessorKey: 'id',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Code" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue('CODE')}</div>,
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
     enableSorting: true,
   },
   {
-    accessorKey: 'COMPANY',
+    accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Company" />
+      <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => {
       return (
         <div className="flex space-x-2">
           <span className="max-w-[200px] truncate font-medium">
-            {row.getValue('COMPANY')}
+            {row.getValue('name')}
           </span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'SUPPLIER',
+    accessorKey: 'hsn_code',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Supplier" />
+      <DataTableColumnHeader column={column} title="HSN Code" />
     ),
     cell: ({ row }) => {
       return (
         <div className="flex space-x-2">
           <span className="max-w-[200px] truncate font-medium">
-            {row.getValue('SUPPLIER')}
+            {row.getValue('hsn_code')}
           </span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'ITEM NAME',
+    accessorKey: 'total_qty',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Item Name" />
+      <DataTableColumnHeader column={column} title="Total Qty" />
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex w-[200px] items-center">
-          <span>{row.getValue('ITEM NAME')}</span>
+        <div className="flex items-center">
+          <span>{row.getValue('total_qty')}</span>
         </div>
       );
     },
   },
-  {
-    accessorKey: 'EXPIRY',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Expiry" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="w-[80px]">
-          <span>{row.getValue('EXPIRY')}</span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'BATCH',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Batch" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="w-[100px]">
-          <span>{row.getValue('BATCH')}</span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'PACK',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Pack" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="w-[80px]">
-          <span>{row.getValue('PACK')}</span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'QTY',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Qty" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="w-[60px] text-right">
-          <span>{row.getValue('QTY')}</span>
-        </div>
-      );
-    },
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />,
-  },
+  // {
+  //   accessorKey: 'batch_code',
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Batch ID" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="w-[80px]">
+  //         <span>{row.getValue('batch_code')}</span>
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   id: 'actions',
+  //   cell: ({ row }) => <DataTableRowActions row={row} />,
+  // },
 ];

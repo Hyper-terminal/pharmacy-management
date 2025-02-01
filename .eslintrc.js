@@ -19,6 +19,7 @@ module.exports = {
     },
   },
   rules: {
-    'react/react-in-jsx-scope': 'off', // Disable the rule
+    'react/react-in-jsx-scope': 'off', // Disable the rule,
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };

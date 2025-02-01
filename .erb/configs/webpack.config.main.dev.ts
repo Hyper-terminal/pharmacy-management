@@ -58,6 +58,18 @@ const configuration: webpack.Configuration = {
     __dirname: false,
     __filename: false,
   },
+
+  externals: {
+    knex: 'commonjs knex',
+    'better-sqlite3': 'commonjs better-sqlite3',
+  },
+
+  resolve: {
+    alias: {
+      pg: false,
+      sqlite3: false,
+    },
+  },
 };
 
 export default merge(baseConfig, configuration);

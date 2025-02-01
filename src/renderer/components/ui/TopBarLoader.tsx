@@ -1,79 +1,88 @@
-import { useLayoutEffect, useRef } from 'react';
-import gsap from 'gsap';
+import { motion } from "framer-motion";
 
-export default function TopBarLoader({text}: {text?: string}) {
-  const containerRef = useRef<HTMLDivElement>(null);
+interface TopBarLoaderProps {
+  text?: string;
+}
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      // Animate all borders appearing together
-      gsap.fromTo(
-        '.border-animation',
-        {
-          scaleX: 0,
-          scaleY: 0,
-          opacity: 0,
-        },
-        {
-          scaleX: 1,
-          scaleY: 1,
-          opacity: 1,
-          duration: 0.6,
-          ease: 'power3.out',
-        }
-      );
+export default function TopBarLoader({ text }: TopBarLoaderProps) {
+  const borderVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+  };
 
-      // Add subtle pulsing animation
-      gsap.to('.border-animation', {
-        opacity: 0.7,
-        duration: 1.2,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut'
-      });
-
-      // Animate text if present
-      if (text) {
-        gsap.fromTo(
-          '.text-animation',
-          {
-            y: -20,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.4,
-            delay: 0.3,
-            ease: 'back.out',
-          }
-        );
-      }
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, [text]);
+  const textVariants = {
+    initial: { opacity: 0, y: -20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 20 }
+  };
 
   return (
-    <div ref={containerRef}>
+    <motion.div
+      className="pointer-events-none"
+      initial="initial"
+      animate="animate"
+    >
       {/* Top border */}
-      <div className="border-animation fixed top-0 right-0 left-0 z-50 h-3 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700" />
+      <motion.div
+        variants={borderVariants}
+        className="fixed top-0 left-0 right-0 z-50 h-2 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700"
+      >
+        <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+      </motion.div>
 
       {/* Right border */}
-      <div className="border-animation fixed top-3 right-0 bottom-3 z-50 w-3 bg-gradient-to-t from-purple-500 via-pink-500 to-blue-500 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700" />
+      <motion.div
+        variants={borderVariants}
+        transition={{ delay: 0.1 }}
+        className="fixed top-0 bottom-0 right-0 z-50 w-2 bg-gradient-to-t from-purple-500 via-pink-500 to-blue-500 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700"
+      >
+        <div className="absolute inset-0 animate-shimmer-vertical bg-gradient-to-t from-transparent via-white/30 to-transparent" />
+      </motion.div>
 
       {/* Bottom border */}
-      <div className="border-animation fixed bottom-0 right-0 left-0 z-50 h-3 bg-gradient-to-l from-purple-500 via-pink-500 to-blue-500 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700" />
+      <motion.div
+        variants={borderVariants}
+        transition={{ delay: 0.2 }}
+        className="fixed bottom-0 left-0 right-0 z-50 h-2 bg-gradient-to-l from-purple-500 via-pink-500 to-blue-500 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700"
+      >
+        <div className="absolute inset-0 animate-shimmer bg-gradient-to-l from-transparent via-white/30 to-transparent" />
+      </motion.div>
 
       {/* Left border */}
-      <div className="border-animation fixed top-3 left-0 bottom-3 z-50 w-3 bg-gradient-to-b from-purple-500 via-pink-500 to-blue-500 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700" />
+      <motion.div
+        variants={borderVariants}
+        transition={{ delay: 0.3 }}
+        className="fixed top-0 bottom-0 left-0 z-50 w-2 bg-gradient-to-b from-purple-500 via-pink-500 to-blue-500 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700"
+      >
+        <div className="absolute inset-0 animate-shimmer-vertical bg-gradient-to-b from-transparent via-white/30 to-transparent" />
+      </motion.div>
 
       {/* Text container */}
-      {text && (
-        <div className="text-animation fixed top-1 left-1/2 -translate-x-1/2 z-50 px-4 py-1 text-sm">
-          {text}
-        </div>
+      {(text || "Loading...") && (
+        <motion.div
+          variants={textVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 20,
+            delay: 0.4
+          }}
+          className="fixed z-50 px-4 py-1 text-sm font-medium text-white -translate-x-1/2 rounded-lg top-3 left-1/2 backdrop-blur-sm bg-none"
+        >
+          <motion.div
+            className="relative rounded-lg animate-border bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 p-[1px]"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className="w-full h-full px-4 py-1 rounded-lg bg-black/60">
+              {text || "Loading..."}
+            </div>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

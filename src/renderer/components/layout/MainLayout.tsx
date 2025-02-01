@@ -5,19 +5,19 @@ import {
   SidebarTrigger,
 } from '@/src/renderer/components/ui/Sidebar';
 import { Outlet } from 'react-router-dom';
+import { Toaster } from '../ui/Toaster';
 
 export default function MainLayout() {
   return (
     <ThemeProvider>
       <SidebarProvider>
         <AppSidebar />
-        <main className='p-4 overflow-hidden'>
+        <main className="w-full p-4 overflow-hidden">
           <SidebarTrigger />
-
-            <Outlet />
-
+          <Outlet />
         </main>
       </SidebarProvider>
+      <Toaster position="top-center"/>
     </ThemeProvider>
   );
 }
