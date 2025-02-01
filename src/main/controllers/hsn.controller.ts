@@ -69,7 +69,7 @@ export async function getGstData(stringToSearch: string) {
     const gstData: any[] = [];
 
     // Read and parse CSV file
-    fs.createReadStream(getAssetPath('gstData.csv'))
+    fs.createReadStream(getAssetPath('gstdata.csv'))
       .pipe(csv())
       .on('data', (row: any) => {
         gstData.push(row);
