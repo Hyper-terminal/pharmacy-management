@@ -9,7 +9,6 @@ import dbService from '../database';
 ipcMain.handle('search-medicines', async (_event, searchString) => {
   try {
     // Access the low-level better-sqlite3 connection
-
     const stmt = dbService.getConnection().prepare(`
                   SELECT medicines.id,
                   medicines.name,
@@ -23,9 +22,12 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
                   INNER JOIN batches ON medicines.batch_id = batches.id
                   WHERE medicines.name LIKE ?
                     AND medicines.total_qty > 0
+                   AND STRFTIME('%Y-%m-%d',
+                 '20' || SUBSTR(batches.expiry_date, 7, 2) || '-' ||
+                 SUBSTR(batches.expiry_date, 4, 2) || '-' ||
+                 SUBSTR(batches.expiry_date, 1, 2)) > DATE('now')
                   GROUP BY medicines.name
                   ORDER BY batches.expiry_date ASC;
-
 `);
 
     // Execute the query with the search term, using wildcards for partial matching
@@ -35,6 +37,8 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
     results.forEach((result: any) => {
       result.total_qty = result.total_qty.split(',');
     });
+
+    console.log({results})
 
     return results;
   } catch (error) {

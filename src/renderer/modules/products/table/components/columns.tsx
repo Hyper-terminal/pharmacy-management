@@ -30,14 +30,14 @@ export const columns: ColumnDef<MedicineProps>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: 'id',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Code" />
-    ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
-    enableSorting: true,
-  },
+  // {
+  //   accessorKey: 'id',
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Code" />
+  //   ),
+  //   cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
+  //   enableSorting: true,
+  // },
   {
     accessorKey: 'name',
     header: ({ column }) => (

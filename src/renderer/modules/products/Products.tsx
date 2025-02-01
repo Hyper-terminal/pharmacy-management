@@ -22,6 +22,7 @@ export default function Products() {
     };
   }, []);
 
+
   return (
     <div className="flex-col flex-1 h-full max-w-full p-8 space-y-8 overflow-hidden overflow-y-auto md:flex">
       <div className="flex items-center justify-between space-y-2">

@@ -22,6 +22,7 @@ import { customerDetailsSchema, mapBillingFormFields } from '../schema';
 import Addbilling from './Addbilling';
 import { BillItem } from './BillItem';
 import RecentBills from './RecentBills';
+import { generateBillPDF } from '@/src/renderer/utils/generateBillPDF';
 
 export default function Billing() {
   const [isLoading, setIsLoading] = useState(false);
@@ -91,26 +92,82 @@ export default function Billing() {
 
     try {
       setIsLoading(true);
-      console.log({ billItems });
-      // calculate total for each item here as well
-      // update FINAL PRICE in each item
       const updatedBillItems = billItems?.map((item) => ({
         ...item,
         'FINAL PRICE': calculateFinalPrice(item),
       }));
+
       const billadd = await window.electron.ipcRenderer.invoke('add-bill', {
         items: updatedBillItems?.map((item) => mapBillingFormFields(item)),
         customer: customerDetails,
       });
+
       if (!billadd.success) {
         setIsLoading(false);
         toast.error(billadd.message);
         return;
       }
-      setTimeout(() => {
-        setIsLoading(false);
-        toast.success('Bill generated successfully!');
-      }, 1000);
+
+      // Generate PDF
+      const pdfData = {
+        billNo: billadd.billNo,
+        date: new Date().toLocaleDateString(),
+        customerDetails: {
+          name: customerDetails.customer_name,
+          phone: customerDetails.customer_phone,
+        },
+        doctorDetails: {
+          name: customerDetails.doctor_name,
+          phone: customerDetails.doctor_phone,
+          registration: customerDetails.doctor_registration,
+        },
+        items: updatedBillItems.map((item) => ({
+          name: item.NAME.name,
+          batchCode: item.NAME.batch_codes[0],
+          quantity: Number(item.QTY),
+          price: Number(item.PRICE),
+          discount: Number(item.DISCOUNT),
+          finalPrice: Number(item['FINAL PRICE']),
+        })),
+        totalAmount: calculateTotal(),
+      };
+
+      const pdfBlob = await generateBillPDF(pdfData);
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      // Create an iframe for printing
+      const printFrame = document.createElement('iframe');
+      printFrame.style.display = 'none';
+      document.body.appendChild(printFrame);
+
+      printFrame.src = pdfUrl;
+
+      printFrame.onload = () => {
+        try {
+          printFrame.contentWindow?.print();
+
+          // Cleanup after print dialog is closed
+          setTimeout(() => {
+            document.body.removeChild(printFrame);
+            URL.revokeObjectURL(pdfUrl);
+          }, 1000);
+        } catch (error) {
+          console.error('Print failed:', error);
+        }
+      };
+
+      setIsLoading(false);
+      toast.success('Bill generated successfully!');
+
+      // Clear the form
+      setBillItems([]);
+      setCustomerDetails({
+        customer_name: '',
+        customer_phone: '',
+        doctor_name: '',
+        doctor_phone: '',
+        doctor_registration: '',
+      });
     } catch (error) {
       toast.error('Failed to generate bill');
       setIsLoading(false);
