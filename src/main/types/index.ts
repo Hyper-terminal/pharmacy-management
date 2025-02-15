@@ -40,3 +40,10 @@ export interface BatchProps {
   bill_number?: string;
   pack?: string;
 }
+
+export interface DistributorProps {
+  name: string;
+  phone: string;
+  address: string;
+  email: string;
+}

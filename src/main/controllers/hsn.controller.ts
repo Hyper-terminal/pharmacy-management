@@ -98,9 +98,9 @@ export async function getGstData(stringToSearch: string) {
           const results = fuse.search(HSN_Description);
 
           const {
-            'CGST Rate\r\n\r\n  (%)': cgstRate,
-            'SGST / UTGST\r\n\r\n  Rate (%)': sgstRate,
-            'IGST Rate\r\n\r\n  (%)': igstRate,
+            'CGST Rate\n\n  (%)': cgstRate,
+            'SGST / UTGST\n\n  Rate (%)': sgstRate,
+            'IGST Rate\n\n  (%)': igstRate,
           } = results?.[0]?.item || {};
 
           // Resolve with results

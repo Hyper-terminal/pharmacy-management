@@ -28,43 +28,37 @@ export default function SingleProductAdd() {
   const form = useForm<z.infer<typeof singleProductSchema>>({
     resolver: zodResolver(singleProductSchema),
     defaultValues: {
-      supplier: 'ABC Pharmaceuticals',
-      bill_number: 'BILL123',
-      received_date: new Date()
-        .toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: '2-digit',
-        })
-        .replace(/\//g, '/'),
-      manufacturer: 'XYZ Labs',
-      medicine_name: 'Paracetamol',
-      barcode: '123456789',
+      supplier: '',
+      bill_number: '',
+      received_date: '',
+      manufacturer: '',
+      medicine_name: '',
+      barcode: '',
       pack: PackType.TABLET,
-      batch_code: 'BATCH001',
-      expiry_date: '01/12/24',
-      quantity: 100,
-      f_qty: 5,
-      half_qty: 2,
-      purchase_rate: 8.5,
-      sale_rate: 10.0,
-      mrp: 12.0,
-      discount: 5,
-      cgst: 9,
-      sgst: 9,
-      igst: 18,
-      additional_vat: 2,
-      amount: 850,
-      local_cent: 1,
-      scm1: 2,
-      scm2: 3,
-      scm_percentage: 5,
-      tcs_percentage: 1,
-      tcs_amount: 8.5,
-      po_number: 'PO123',
-      po_date: '01/01/24',
-      hsn_code: '30049099',
-      quantity_per_pack: 10,
+      batch_code: '',
+      expiry_date: '',
+      quantity: 0,
+      f_qty: 0,
+      half_qty: 0,
+      purchase_rate: 0,
+      sale_rate: 0,
+      mrp: 0,
+      discount: 0,
+      cgst: 0,
+      sgst: 0,
+      igst: 0,
+      additional_vat: 0,
+      amount: 0,
+      local_cent: 0,
+      scm1: 0,
+      scm2: 0,
+      scm_percentage: 0,
+      tcs_percentage: 0,
+      tcs_amount: 0,
+      po_number: '',
+      po_date: '01/01/2001',
+      hsn_code: '',
+      quantity_per_pack: 1,
     },
   });
 
@@ -111,7 +105,7 @@ export default function SingleProductAdd() {
         '/' +
         cleaned.slice(2, 4) +
         '/' +
-        cleaned.slice(4, 6);
+        cleaned.slice(4, 8);
     } else if (cleaned.length >= 2) {
       cleaned = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
     }
@@ -139,7 +133,6 @@ export default function SingleProductAdd() {
 
   async function onSubmit(values: z.infer<typeof singleProductSchema>) {
     try {
-      console.log({ values });
       const result = await window.electron.ipcRenderer.invoke(
         'add-single-product',
         values,
@@ -156,8 +149,6 @@ export default function SingleProductAdd() {
       console.error(error);
     }
   }
-
-  console.log({ form });
 
   return (
     <Form {...form}>
@@ -211,8 +202,8 @@ export default function SingleProductAdd() {
                 <FormControl>
                   <Input
                     type="text"
-                    placeholder="DD/MM/YY"
-                    maxLength={8}
+                    placeholder="DD/MM/YYYY"
+                    maxLength={10}
                     {...field}
                     value={field.value || ''}
                     onChange={(e) => {
@@ -260,8 +251,8 @@ export default function SingleProductAdd() {
                 <FormControl>
                   <Input
                     type="text"
-                    placeholder="DD/MM/YY"
-                    maxLength={8}
+                    placeholder="DD/MM/YYYY"
+                    maxLength={10}
                     {...field}
                     value={field.value || ''}
                     onChange={(e) => {
@@ -422,7 +413,7 @@ export default function SingleProductAdd() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {Object.entries(PackType).map(([_, value]) => (
+                    {Object.entries(PackType).map(([, value]) => (
                       <SelectItem key={value} value={value}>
                         {PackTypeDisplay[value as keyof typeof PackTypeDisplay]}
                       </SelectItem>

@@ -22,8 +22,8 @@ export const singleProductSchema = z.object({
   bill_number: z.string().min(1, 'Bill number is required'),
   received_date: z
     .string()
-    .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/, {
-      message: 'Received date must be in DD/MM/YY format',
+    .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/, {
+      message: 'Received date must be in DD/MM/YYYY format',
     }),
   manufacturer: z.string().min(1, 'Manufacturer is required'),
   medicine_name: z.string().min(1, 'Medicine name is required'),
@@ -32,8 +32,8 @@ export const singleProductSchema = z.object({
   batch_code: z.string().optional(),
   expiry_date: z
     .string()
-    .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/, {
-      message: 'Expiry date must be in DD/MM/YY format',
+    .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/, {
+      message: 'Expiry date must be in DD/MM/YYYY format',
     }),
   quantity: z.number().min(0, 'Quantity must be positive'),
   f_qty: z.number().min(0),
@@ -56,8 +56,8 @@ export const singleProductSchema = z.object({
   po_number: z.string().optional(),
   po_date: z
     .string()
-    .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/, {
-      message: 'PO date must be in DD/MM/YY format',
+    .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/, {
+      message: 'PO date must be in DD/MM/YYYY format',
     })
     .optional(),
   hsn_code: z.string().min(1, 'HSN code is required'),

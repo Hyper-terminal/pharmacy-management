@@ -135,26 +135,47 @@ export default function Billing() {
       const pdfBlob = await generateBillPDF(pdfData);
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      // Create an iframe for printing
-      const printFrame = document.createElement('iframe');
-      printFrame.style.display = 'none';
-      document.body.appendChild(printFrame);
-
-      printFrame.src = pdfUrl;
-
-      printFrame.onload = () => {
-        try {
-          printFrame.contentWindow?.print();
-
-          // Cleanup after print dialog is closed
+      // Try to print using window.print() with the PDF
+      const printWindow = window.open(pdfUrl, '_blank');
+      if (printWindow) {
+        printWindow.onload = () => {
           setTimeout(() => {
-            document.body.removeChild(printFrame);
-            URL.revokeObjectURL(pdfUrl);
-          }, 1000);
-        } catch (error) {
-          console.error('Print failed:', error);
-        }
-      };
+            try {
+              printWindow.print();
+              // Cleanup after print
+              setTimeout(() => {
+                window.URL.revokeObjectURL(pdfUrl);
+                printWindow.close();
+              }, 1000);
+            } catch (error) {
+              console.error('Print failed:', error);
+              toast.error('Failed to print bill');
+            }
+          }, 500); // Add slight delay for PDF rendering
+        };
+      } else {
+        // Fallback to iframe method if popup is blocked
+        const printFrame = document.createElement('iframe');
+        printFrame.style.display = 'none';
+        document.body.appendChild(printFrame);
+        printFrame.src = pdfUrl;
+
+        printFrame.onload = () => {
+          setTimeout(() => {
+            try {
+              printFrame.contentWindow?.print();
+              // Cleanup after print
+              setTimeout(() => {
+                document.body.removeChild(printFrame);
+                URL.revokeObjectURL(pdfUrl);
+              }, 1000);
+            } catch (error) {
+              console.error('Print failed:', error);
+              toast.error('Failed to print bill');
+            }
+          }, 500);
+        };
+      }
 
       setIsLoading(false);
       toast.success('Bill generated successfully!');

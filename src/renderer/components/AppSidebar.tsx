@@ -5,6 +5,7 @@ import {
   Settings,
   Package2Icon,
   ShieldAlert,
+  Users,
 } from 'lucide-react';
 
 import { ThemeToggle } from '@/src/renderer/components/container/ThemeToggle';
@@ -27,6 +28,11 @@ const items = [
     title: 'Products',
     url: '/',
     icon: Package2,
+  },
+  {
+    title: 'Distributors',
+    url: '/distributors',
+    icon: Users,
   },
   {
     title: 'Add Product',
