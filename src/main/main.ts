@@ -9,13 +9,14 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { createInitialData } from '@/src/main/schema/seed';
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, dialog } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import './services';
+import fs from 'fs';
 // import electronDebug from 'electron-debug';
 class AppUpdater {
   constructor() {
@@ -31,6 +32,66 @@ ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('open-pdf', (event, pdfUrl) => {
+  const pdfWindow = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      plugins: true,
+    },
+  });
+
+  pdfWindow.loadURL(pdfUrl);
+
+  pdfWindow.webContents.on('did-finish-load', () => {
+    pdfWindow.webContents.print({ silent: true }, (success) => {
+      if (!success) {
+        console.error('Print failed');
+      }
+      pdfWindow.close();
+    });
+  });
+});
+
+ipcMain.on('print-pdf', (event, pdfBuffer: Buffer) => {
+  const tempDir = app.getPath('temp');
+  const filePath = path.join(tempDir, `bill-${Date.now()}.pdf`);
+
+  fs.writeFile(filePath, pdfBuffer, async (error) => {
+    if (error) {
+      console.error('Failed to save PDF:', error);
+      return;
+    }
+
+    const win = new BrowserWindow({
+      show: false,
+      webPreferences: {
+        plugins: true,
+        webSecurity: false,
+      },
+    });
+
+    win.loadURL(`file://${filePath}`);
+
+    win.webContents.on('did-finish-load', () => {
+      win.webContents.print(
+        {
+          silent: false,
+          printBackground: true,
+          deviceName: '',
+        },
+        (success) => {
+          if (!success) dialog.showErrorBox('Error', 'Failed to print bill');
+          // Clean up temporary file
+          fs.unlink(filePath, (err) => {
+            if (err) console.error('Failed to delete temp file:', err);
+          });
+          win.close();
+        },
+      );
+    });
+  });
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -78,7 +139,6 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     autoHideMenuBar: true,
     webPreferences: {
-      devTools: true,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),

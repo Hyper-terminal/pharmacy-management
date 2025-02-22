@@ -133,42 +133,15 @@ export default function Billing() {
       };
 
       const pdfBlob = await generateBillPDF(pdfData);
-      const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      // Create hidden iframe for printing
-      const printFrame = document.createElement('iframe');
-      printFrame.style.display = 'none';
-      printFrame.src = pdfUrl;
-      document.body.appendChild(printFrame);
+      // Convert Blob to ArrayBuffer
+      const pdfBuffer = await new Response(pdfBlob).arrayBuffer();
 
-      // Wait for PDF to load
-      printFrame.onload = () => {
-        setTimeout(() => {
-          try {
-            // Trigger print
-            printFrame.contentWindow?.print();
-
-            // Cleanup after print
-            setTimeout(() => {
-              document.body.removeChild(printFrame);
-              URL.revokeObjectURL(pdfUrl);
-            }, 5000); // Increased cleanup delay
-          } catch (error) {
-            console.error('Print failed:', error);
-            toast.error('Failed to print bill');
-          }
-        }, 1000); // Increased delay for PDF rendering
-      };
-
-      // Fallback timeout in case onload doesn't fire
-      setTimeout(() => {
-        try {
-          printFrame.contentWindow?.print();
-        } catch (error) {
-          console.error('Fallback print failed:', error);
-          toast.error('Failed to print bill');
-        }
-      }, 3000);
+      // Send to main process for printing
+      window.electron.ipcRenderer.sendMessage(
+        'print-pdf',
+        Buffer.from(pdfBuffer),
+      );
 
       setTimeout(() => {
         setIsLoading(false);
