@@ -28,8 +28,9 @@ export const createBillingTable = async (): Promise<void> => {
       table.decimal('final_price', 10, 2);
       table.string('customer_name');
       table.string('customer_phone');
-      table.string('doctor_name');
-      table.string('doctor_phone');
+      table.string('doctor_name').nullable();
+      table.string('doctor_phone').nullable();
+      table.string('doctor_registration').nullable();
       table.string('hsn_code');
       table.integer('bill_no').unsigned();
       table.timestamps(true, true);

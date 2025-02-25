@@ -46,20 +46,24 @@ export const customerDetailsSchema = z.object({
     .string()
     .min(8, 'Customer phone must be at least 8 characters')
     .max(20, 'Customer phone must be 20 characters or less')
-    .regex(/^[0-9\s\+\(\)-]+$/, 'Invalid phone number'),
+    .regex(/^[0-9\s\+\(\)-]+$/, 'Invalid phone number')
+    .optional(),
   doctor_name: z
     .string()
     .min(1, 'Doctor name is required')
-    .max(50, 'Doctor name must be 50 characters or less'),
+    .max(50, 'Doctor name must be 50 characters or less')
+    .optional(),
   doctor_phone: z
     .string()
     .min(8, 'Doctor phone must be at least 8 characters')
     .max(20, 'Doctor phone must be 20 characters or less')
-    .regex(/^[0-9\s\+\(\)-]+$/, 'Invalid phone number'),
+    .regex(/^[0-9\s\+\(\)-]+$/, 'Invalid phone number')
+    .optional(),
   doctor_registration: z
     .string()
     .min(1, 'Doctor registration is required')
-    .max(20, 'Doctor registration must be 20 characters or less'),
+    .max(20, 'Doctor registration must be 20 characters or less')
+    .optional(),
 });
 /**
  * Maps billing form fields to their corresponding values from the schema.

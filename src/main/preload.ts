@@ -15,8 +15,7 @@ export type Channels =
   | 'get-gst-data'
   | 'add-single-product'
   | 'get-distributors'
-  | 'add-distributor'
-  | 'print-pdf';
+  | 'add-distributor';
 
 const electronHandler = {
   ipcRenderer: {

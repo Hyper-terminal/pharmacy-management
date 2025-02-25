@@ -38,7 +38,7 @@ ipcMain.handle('search-medicines', async (_event, searchString) => {
       result.total_qty = result.total_qty.split(',');
     });
 
-    console.log({results})
+    console.log({ results });
 
     return results;
   } catch (error) {

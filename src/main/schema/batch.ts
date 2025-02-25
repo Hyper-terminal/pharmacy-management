@@ -28,7 +28,11 @@ export const createBatchesTable = async () => {
     table.string('po_number').nullable(); // Purchase order number for the batch
     table.date('po_date'); // Purchase order date for the batch
     table.timestamps(true, true);
-    table.string('supplier'); // Supplier name
+    table
+      .integer('distributor_id')
+      .unsigned()
+      .references('distributors.id')
+      .onDelete('SET NULL');
     table.string('bill_number'); // Bill number
     table.decimal('mrp', 10, 2); // MRP of the medicine
     table.string('manufacturer'); // Manufacturer name

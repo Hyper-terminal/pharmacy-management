@@ -3,6 +3,7 @@ import { Button } from '@/src/renderer/components/ui/Button';
 import { Input } from '@/src/renderer/components/ui/Input';
 import TopBarLoader from '@/src/renderer/components/ui/TopBarLoader';
 import { useBillStore } from '@/src/renderer/store/bill.store';
+import { generateBillPDF } from '@/src/renderer/utils/generateBillPDF';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   PrinterIcon,
@@ -22,7 +23,6 @@ import { customerDetailsSchema, mapBillingFormFields } from '../schema';
 import Addbilling from './Addbilling';
 import { BillItem } from './BillItem';
 import RecentBills from './RecentBills';
-import { generateBillPDF } from '@/src/renderer/utils/generateBillPDF';
 
 export default function Billing() {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +34,7 @@ export default function Billing() {
     doctor_phone: '',
     doctor_registration: '',
   });
+  const [pdfPreview, setPdfPreview] = useState<string | null>(null);
 
   const billItems = useBillStore((state) => state.billItems);
   const setBillItems = useBillStore((state) => state.setBillItems);
@@ -74,6 +75,12 @@ export default function Billing() {
     return Number(afterDiscount.toFixed(2));
   };
 
+  const handlePreviewPdf = (pdfBuffer: ArrayBuffer) => {
+    const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
+    const pdfUrl = URL.createObjectURL(blob);
+    setPdfPreview(pdfUrl);
+  };
+
   const handlePrintBill = async () => {
     try {
       customerDetailsSchema.parse(customerDetails);
@@ -92,6 +99,11 @@ export default function Billing() {
 
     try {
       setIsLoading(true);
+
+      // Fetch pharmacy details from user service
+      const pharmacyDetails =
+        await window.electron.ipcRenderer.invoke('get-profile');
+
       const updatedBillItems = billItems?.map((item) => ({
         ...item,
         'FINAL PRICE': calculateFinalPrice(item),
@@ -108,7 +120,7 @@ export default function Billing() {
         return;
       }
 
-      // Generate PDF
+      // Generate PDF with pharmacy details
       const pdfData = {
         billNo: billadd.billNo,
         date: new Date().toLocaleDateString(),
@@ -130,6 +142,14 @@ export default function Billing() {
           finalPrice: Number(item['FINAL PRICE']),
         })),
         totalAmount: calculateTotal(),
+        pharmacyDetails: {
+          name: pharmacyDetails.pharmacyName,
+          address: pharmacyDetails.address,
+          phone: pharmacyDetails.mobile,
+          license: pharmacyDetails.LicenseNumber,
+          gstin: pharmacyDetails.GstNumber,
+          registration: pharmacyDetails.RegistrationNumber,
+        },
       };
 
       const pdfBlob = await generateBillPDF(pdfData);
@@ -137,11 +157,7 @@ export default function Billing() {
       // Convert Blob to ArrayBuffer
       const pdfBuffer = await new Response(pdfBlob).arrayBuffer();
 
-      // Send to main process for printing
-      window.electron.ipcRenderer.sendMessage(
-        'print-pdf',
-        Buffer.from(pdfBuffer),
-      );
+      handlePreviewPdf(pdfBuffer);
 
       setTimeout(() => {
         setIsLoading(false);
@@ -158,6 +174,7 @@ export default function Billing() {
         doctor_registration: '',
       });
     } catch (error) {
+      console.log({ error });
       toast.error('Failed to generate bill');
       setIsLoading(false);
     }
@@ -444,6 +461,22 @@ export default function Billing() {
           </motion.div>
         </div>
       </section>
+      <Dialog open={!!pdfPreview} onOpenChange={() => setPdfPreview(null)}>
+        <DialogContent className="max-w-6xl h-[95vh] rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold">Bill Preview</h2>
+            </div>
+            <div className="flex-1 p-6">
+              <iframe
+                src={pdfPreview || ''}
+                className="w-full h-full rounded-md shadow-sm"
+                title="Bill Preview"
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

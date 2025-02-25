@@ -25,6 +25,9 @@ import {
 
 export default function SingleProductAdd() {
   const [isLoadingGst, setIsLoadingGst] = useState(false);
+  const [suppliers, setSuppliers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
   const form = useForm<z.infer<typeof singleProductSchema>>({
     resolver: zodResolver(singleProductSchema),
     defaultValues: {
@@ -94,6 +97,23 @@ export default function SingleProductAdd() {
     }
   }, [form.watch('hsn_code')]);
 
+  // Effect to fetch suppliers
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        const result =
+          await window.electron.ipcRenderer.invoke('get-distributors');
+        if (result) {
+          setSuppliers(result);
+        }
+      } catch (error) {
+        console.error('Error fetching suppliers:', error);
+      }
+    };
+
+    fetchSuppliers();
+  }, []);
+
   const formatDateInput = (value: string) => {
     // Remove any non-digit characters
     let cleaned = value.replace(/\D/g, '');
@@ -133,6 +153,8 @@ export default function SingleProductAdd() {
 
   async function onSubmit(values: z.infer<typeof singleProductSchema>) {
     try {
+      console.log(values);
+      return;
       const result = await window.electron.ipcRenderer.invoke(
         'add-single-product',
         values,
@@ -160,9 +182,37 @@ export default function SingleProductAdd() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Supplier</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select supplier" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <div className="p-1">
+                      <Input
+                        placeholder="Search suppliers..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="mb-2"
+                      />
+                    </div>
+                    {suppliers
+                      .filter((supplier: any) =>
+                        supplier.name
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()),
+                      )
+                      .map((supplier: any) => (
+                        <SelectItem key={supplier.id} value={supplier.id}>
+                          {supplier.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

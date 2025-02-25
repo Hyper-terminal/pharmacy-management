@@ -38,11 +38,17 @@ export default function AddDistributor() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof distributorFormSchema>) {
-    toast.success('Distributor added successfully', {
-      description: `${values.name} has been added to the system`,
-    });
-    form.reset();
+  async function onSubmit(values: z.infer<typeof distributorFormSchema>) {
+    const result = await window.electron.ipcRenderer.invoke(
+      'add-distributor',
+      values,
+    );
+    if (result) {
+      toast.success('Distributor added successfully', {
+        description: `${values.name} has been added to the system`,
+      });
+      form.reset();
+    }
   }
 
   return (

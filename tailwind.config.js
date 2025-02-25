@@ -5,6 +5,14 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 module.exports = {
   darkMode: ['class'],
   content: ['./src/renderer/**/*.{js,jsx,ts,tsx}'],
+  safelist: [
+    // Add this section if not exists
+    'w-[210mm]',
+    'min-h-[297mm]',
+    'bg-gray-50',
+    'text-blue-800',
+    'border-blue-800',
+  ],
   theme: {
     container: {
       center: true,
@@ -98,13 +106,13 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'gradient': 'gradient 3s linear infinite',
+        gradient: 'gradient 3s linear infinite',
         'gradient-vertical': 'gradient-vertical 3s linear infinite',
         'fade-in': 'fadeIn 0.2s ease-in',
-        'shimmer': 'shimmer 2s linear infinite',
+        shimmer: 'shimmer 2s linear infinite',
         'shimmer-vertical': 'shimmer-vertical 2s linear infinite',
-        'float': 'float 3s ease-in-out infinite',
-        'border': 'border 4s linear infinite',
+        float: 'float 3s ease-in-out infinite',
+        border: 'border 4s linear infinite',
       },
       sidebar: {
         DEFAULT: 'hsl(var(--sidebar-background))',
