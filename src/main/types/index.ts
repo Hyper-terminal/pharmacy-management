@@ -47,3 +47,7 @@ export interface DistributorProps {
   address: string;
   email: string;
 }
+
+export interface ManualProductProps extends MedicineProps, BatchProps {
+  // This interface combines all properties from MedicineProps and BatchProps
+}

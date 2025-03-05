@@ -4,7 +4,9 @@ import {
   insertCsvBatch,
   insertCsvMedicine,
 } from '../controllers/csv.controller';
-import { getAllProducts } from '../controllers/medicine.controller';
+import {
+  getAllProducts
+} from '../controllers/medicine.controller';
 import dbService from '../database';
 import { BatchProps, MedicineProps } from '../types';
 
@@ -16,8 +18,7 @@ interface ICsvData {
 // Handle importing CSV file
 ipcMain.handle('import-csv', async (_event, file: ICsvData[]) => {
   const knex = dbService.getKnexConnection();
-  // console.log(file);
-  // return;
+
   try {
     // Start a transaction to ensure data consistency
     await knex.transaction(async (trx: Knex.Transaction) => {
@@ -40,8 +41,5 @@ ipcMain.handle('import-csv', async (_event, file: ICsvData[]) => {
 });
 
 ipcMain.handle('get-products', async () => {
-  // const offset = (page - 1) * limit;
-  // return getProducts(offset, limit);
-  // console.log('this is get all products ', await getAllProducts());
   return getAllProducts();
 });

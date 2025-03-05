@@ -29,104 +29,6 @@ export const getAllBatches = async (): Promise<BatchProps[]> => {
   return batches;
 };
 
-export const addBatch = async (batch_data: any) => {
-  try {
-    const insert = dbService.getConnection().prepare(`INSERT INTO
-        batches (quantity,expiry_date,received_date,batch_code,f_qty,half_qty,purchase_rate,sale_rate
-        ,local_cent,scm1,scm2,psr_number,psr_date,tcs_percentage,tcs_amount,po_number,po_date,
-        supplier,bill_number,mrp,manufacturer,discount,
-        excise,additional_vat,scm_percentage,amount,cgst,sgst,barcode,igst,received_batch_id,pack)
-        VALUES (?, ?, ?,?, ?, ?,?, ?,?, ?, ?,?, ?, ?,?, ?,?, ?, ?,?, ?, ?,
-        ?, ?,?, ?, ?,?, ?, ?,?, ?)`);
-
-    const updateMedicines = dbService.getConnection()
-      .prepare(`insert into medicines
-        batches (name,hsn_code,total_qty,batch_id)
-        VALUES (?, ?, ?,?)`);
-
-    const {
-      name,
-      hsn_code,
-      quantity,
-      expiry_date,
-      received_date,
-      batch_code,
-      f_qty,
-      half_qty,
-      purchase_rate,
-      sale_rate,
-      local_cent,
-      scm1,
-      scm2,
-      psr_number,
-      psr_date,
-      tcs_percentage,
-      tcs_amount,
-      po_number,
-      po_date,
-      supplier,
-      bill_number,
-      mrp,
-      manufacturer,
-      discount,
-      excise,
-      additional_vat,
-      scm_percentage,
-      amount,
-      cgst,
-      sgst,
-      barcode,
-      igst,
-      received_batch_id,
-      pack,
-    } = batch_data;
-
-    insert.run(
-      quantity,
-      expiry_date,
-      received_date,
-      batch_code,
-      f_qty,
-      half_qty,
-      purchase_rate,
-      sale_rate,
-      local_cent,
-      scm1,
-      scm2,
-      psr_number,
-      psr_date,
-      tcs_percentage,
-      tcs_amount,
-      po_number,
-      po_date,
-      supplier,
-      bill_number,
-      mrp,
-      manufacturer,
-      discount,
-      excise,
-      additional_vat,
-      scm_percentage,
-      amount,
-      cgst,
-      sgst,
-      barcode,
-      igst,
-      received_batch_id,
-      pack,
-    );
-    updateMedicines.run(name, hsn_code, quantity, received_batch_id);
-
-    // _event.reply('user-added', { id: result.lastInsertRowid });
-
-    // console.log(results);
-    return { success: true };
-  } catch (error) {
-    console.log('error in adding bill to the billing table  ', error);
-    return false;
-  }
-};
-
 export const addSingleProduct = async (product_data: any) => {
   try {
     const knex = dbService.getKnexConnection();
@@ -257,3 +159,33 @@ function addProperdate(incoming_date: string) {
   date_list[2] = '20' + date_list[2];
   return date_list.reverse().join('-');
 }
+
+export const addMultipleBatches = async (
+  batches: BatchProps[],
+  trx: any,
+): Promise<number[]> => {
+  try {
+    const batchIds: number[] = [];
+
+    // Process each batch sequentially within the provided transaction
+    for (const batchData of batches) {
+      // Insert batch and get the ID
+      const [batchId] = await trx('batches').insert({
+        ...batchData,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+      batchIds.push(batchId);
+    }
+
+    return batchIds;
+  } catch (error: any) {
+    console.error('Error adding multiple batches:', error);
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Unknown error occurred while adding batches',
+    );
+  }
+};
